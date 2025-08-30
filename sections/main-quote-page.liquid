@@ -1,0 +1,294 @@
+{{ 'base.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'quantity-input.css' | asset_url | stylesheet_tag }}
+
+<div class="page-width section-{{ section.id }}-padding">
+  <div class="title-wrapper-with-link">
+      <h1 class="title title--primary">Mi Cotización</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="underlined-link">Continuar Navegando</a>
+  </div>
+
+  <div id="quote-cart-contents" class="cart-items-wrapper">
+    <div id="quote-items-container" class="cart-items">
+      <!-- Items will be injected here by JavaScript -->
+    </div>
+    <div id="quote-empty-message" class="cart--empty-message" style="display: none;">
+      <h2 class="cart__empty-text">Tu cotizador está vacío</h2>
+      <a href="{{ routes.all_products_collection_url }}" class="button">
+        Continuar Navegando
+      </a>
+    </div>
+  </div>
+
+  <div id="quote-form-container" style="display: none;">
+    <div class="quote-form-wrapper">
+      <h2 class="title">Completa tus datos para enviar la cotización</h2>
+      {%- form 'contact', id: 'QuoteForm' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="form-status form-status-success" tabindex="-1" autofocus>
+            Gracias por tu cotización. Nos pondremos en contacto contigo pronto.
+          </p>
+        {%- endif -%}
+        {%- if form.errors -%}
+          <div class="form__message" role="alert">
+            <h3 class="form-status form-status--error">{{ 'contact.form.error_heading' | t }}</h3>
+            <ul class="form-status-list">
+              {%- for field in form.errors -%}
+                <li>
+                  <a href="#ContactForm-{{ field }}" class="link">
+                    {%- if form.errors.translated_fields[field] contains 'email' -%}
+                      {{ form.errors.translated_fields[field] | t }}
+                    {%- else -%}
+                      {{ form.errors.messages[field] }}
+                    {%- endif -%}
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <div class="contact__fields">
+          <div class="field">
+            <input class="field__input" autocomplete="name" type="text" name="contact[name]" id="ContactForm-name" required placeholder="Nombre">
+            <label class="field__label" for="ContactForm-name">Nombre *</label>
+          </div>
+          <div class="field field--with-error">
+            <input class="field__input" autocomplete="email" type="email" name="contact[email]" id="ContactForm-email" required placeholder="Correo electrónico">
+            <label class="field__label" for="ContactForm-email">Correo electrónico *</label>
+          </div>
+        </div>
+        <div class="field">
+          <input type="tel" class="field__input" autocomplete="tel" name="contact[phone]" id="ContactForm-phone" placeholder="Teléfono (Opcional)">
+          <label class="field__label" for="ContactForm-phone">Teléfono</label>
+        </div>
+        <div class="field">
+          <textarea rows="10" class="text-area field__input" name="contact[body]" id="ContactForm-body" placeholder="Mensaje"></textarea>
+          <label class="field__label" for="ContactForm-body">Mensaje</label>
+        </div>
+        <textarea name="contact[quote_details]" id="QuoteForm-details" hidden></textarea>
+        <div class="contact__button">
+          <button type="submit" class="button">
+            Enviar Cotización
+          </button>
+        </div>
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+<template id="quote-item-template">
+  <div class="cart-item" data-variant-id="">
+    <div class="cart-item__media">
+      <img class="cart-item__image" src="" alt="" loading="lazy" width="150" height="150">
+    </div>
+    <div class="cart-item__details">
+      <a href="#" class="cart-item__name h4 break"></a>
+      <div class="product-option"></div>
+      <dl class="cart-item__variants"></dl>
+    </div>
+    <div class="cart-item__quantity">
+      <label class="visually-hidden" for="Quantity-"></label>
+      <quantity-input class="quantity">
+        <button class="quantity__button no-js-hidden" name="minus" type="button">
+          <span class="visually-hidden">Disminuir cantidad</span>
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="icon icon-minus" fill="none" viewBox="0 0 10 2"><path fill-rule="evenodd" clip-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 110 1H1A.5.5 0 01.5 1z" fill="currentColor"></path></svg>
+        </button>
+        <input class="quantity__input" type="number" name="quantity" min="1" value="" aria-label="Cantidad">
+        <button class="quantity__button no-js-hidden" name="plus" type="button">
+          <span class="visually-hidden">Aumentar cantidad</span>
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="icon icon-plus" fill="none" viewBox="0 0 10 10"><path fill-rule="evenodd" clip-rule="evenodd" d="M1 4.51a.5.5 0 000 1h3.5l.01 3.5a.5.5 0 001 0l-.01-3.5h3.5a.5.5 0 000-1h-3.5l-.01-3.5a.5.5 0 00-1 0l.01 3.5h-3.5z" fill="currentColor"></path></svg>
+        </button>
+      </quantity-input>
+    </div>
+    <div class="cart-item__price-wrapper">
+      <button class="button button--tertiary" name="remove">Eliminar</button>
+    </div>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const quoteContainer = document.getElementById('quote-items-container');
+    const emptyMessage = document.getElementById('quote-empty-message');
+    const itemTemplate = document.getElementById('quote-item-template');
+    let quoteCart = JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+
+    function renderQuoteCart() {
+      quoteContainer.innerHTML = '';
+      toggleFormVisibility();
+
+      if (quoteCart.length === 0) {
+        emptyMessage.style.display = 'block';
+        return;
+      }
+      emptyMessage.style.display = 'none';
+
+      quoteCart.forEach(item => {
+        const templateClone = itemTemplate.content.cloneNode(true);
+        const cartItem = templateClone.querySelector('.cart-item');
+        cartItem.dataset.variantId = item.id;
+
+        const productUrl = `/products/${item.handle}`;
+
+        templateClone.querySelector('.cart-item__image').src = item.image || '{{ "product-1" | placeholder_svg_tag }}';
+        templateClone.querySelector('.cart-item__image').alt = item.title;
+        templateClone.querySelector('.cart-item__name').textContent = item.title;
+        templateClone.querySelector('.cart-item__name').href = productUrl;
+
+        const variantOptions = templateClone.querySelector('.product-option');
+        variantOptions.innerHTML = '';
+        item.options_with_values.forEach(opt => {
+            const p = document.createElement('p');
+            p.textContent = `${opt.name}: ${opt.value}`;
+            variantOptions.appendChild(p);
+        });
+
+        const quantityInput = templateClone.querySelector('.quantity__input');
+        quantityInput.value = item.quantity;
+        quantityInput.dataset.variantId = item.id;
+
+        quoteContainer.appendChild(templateClone);
+      });
+
+      addEventListeners();
+    }
+
+    function updateQuantity(variantId, newQuantity) {
+      const item = quoteCart.find(i => i.id === variantId);
+      if (item) {
+        item.quantity = newQuantity;
+      }
+      saveAndReRender();
+    }
+
+    function removeItem(variantId) {
+      quoteCart = quoteCart.filter(i => i.id !== variantId);
+      saveAndReRender();
+    }
+
+    function saveAndReRender() {
+      localStorage.setItem('customQuoteCart', JSON.stringify(quoteCart));
+      // Update the header icon count
+      const quoteIconBubble = document.getElementById('QuoteIcon-Bubble');
+      const quoteIconCount = document.getElementById('QuoteIcon-Badge-Count');
+      if(quoteIconBubble && quoteIconCount) {
+          const count = quoteCart.length;
+          quoteIconCount.textContent = count;
+          quoteIconBubble.classList.toggle('hidden', count === 0);
+      }
+      renderQuoteCart();
+    }
+
+    function toggleFormVisibility() {
+      const formContainer = document.getElementById('quote-form-container');
+      if (quoteCart.length > 0) {
+        formContainer.style.display = 'block';
+      } else {
+        formContainer.style.display = 'none';
+      }
+    }
+
+    function addEventListeners() {
+        quoteContainer.querySelectorAll('.quantity__button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const input = button.parentElement.querySelector('.quantity__input');
+                const variantId = input.dataset.variantId;
+                let newQuantity = parseInt(input.value);
+                if(button.name === 'plus') {
+                    newQuantity++;
+                } else if (button.name === 'minus' && newQuantity > 1) {
+                    newQuantity--;
+                }
+                input.value = newQuantity;
+                updateQuantity(variantId, newQuantity);
+            });
+        });
+
+        quoteContainer.querySelectorAll('.quantity__input').forEach(input => {
+            input.addEventListener('change', (event) => {
+                const variantId = event.target.dataset.variantId;
+                const newQuantity = parseInt(event.target.value);
+                if (newQuantity > 0) {
+                    updateQuantity(variantId, newQuantity);
+                } else {
+                    removeItem(variantId);
+                }
+            });
+        });
+
+        quoteContainer.querySelectorAll('[name="remove"]').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const variantId = button.closest('.cart-item').dataset.variantId;
+                removeItem(variantId);
+            });
+        });
+
+        const quoteForm = document.getElementById('QuoteForm');
+        if (quoteForm) {
+          quoteForm.addEventListener('submit', () => {
+            const quoteDetailsField = document.getElementById('QuoteForm-details');
+            const currentQuoteCart = JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+
+            let formattedDetails = "Solicitud de Cotización:\n\n";
+            currentQuoteCart.forEach(item => {
+              formattedDetails += `----------------------------------------\n`;
+              formattedDetails += `Producto: ${item.title}\n`;
+
+              const options = item.options_with_values.map(o => o.value).join(' / ');
+              if (options && options.toLowerCase() !== 'default title') {
+                formattedDetails += `Variante: ${options}\n`;
+              }
+
+              formattedDetails += `Cantidad: ${item.quantity}\n`;
+              formattedDetails += `Link: ${window.location.origin}/products/${item.handle}\n`;
+            });
+
+            quoteDetailsField.value = formattedDetails;
+
+            // Optional: Clear the quote cart after submission
+            // localStorage.removeItem('customQuoteCart');
+          });
+        }
+    }
+
+    renderQuoteCart();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Quote Page",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

@@ -759,6 +759,10 @@
   </div>
 </product-info>
 
+<script id="ProductJson-{{ section.id }}" type="application/json">
+  {{ product | json }}
+</script>
+
 {% schema %}
 {
   "name": "t:sections.main-product.name",
