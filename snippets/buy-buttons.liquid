@@ -149,11 +149,26 @@
     {{ 'component-pickup-availability.css' | asset_url | stylesheet_tag }}
     <pickup-availability
       class="product__pickup-availabilities quick-add-hidden"
-      available
+      {% if product.selected_or_first_available_variant.available and pick_up_availabilities.size > 0 %}
+        available
+      {% endif %}
       data-root-url="{{ routes.root_url }}"
       data-variant-id="{{ product.selected_or_first_available_variant.id }}"
       data-has-only-default-variant="{{ product.has_only_default_variant }}"
     >
+      <template>
+        <pickup-availability-preview class="pickup-availability-preview">
+          <span class="svg-wrapper">
+            {{- 'icon-unavailable.svg' | inline_asset_content -}}
+          </span>
+          <div class="pickup-availability-info">
+            <p class="caption-large">{{ 'products.product.pickup_availability.unavailable' | t }}</p>
+            <button class="pickup-availability-button link link--text underlined-link">
+              {{ 'products.product.pickup_availability.refresh' | t }}
+            </button>
+          </div>
+        </pickup-availability-preview>
+      </template>
     </pickup-availability>
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
@@ -247,7 +262,6 @@
       confirmationModal.removeAttribute('open');
     });
 
-    // Initial update of the icon count on page load
     document.addEventListener('DOMContentLoaded', updateIconCount);
     document.addEventListener('quote:updated', updateIconCount);
   })();
