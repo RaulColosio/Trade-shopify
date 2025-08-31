@@ -96,7 +96,7 @@
         const countElement = document.getElementById('QuoteIcon-Badge-Count');
         const iconBubble = document.getElementById('QuoteIcon-Bubble');
         if (countElement && iconBubble) {
-            const count = cart.length;
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
             countElement.textContent = count;
             iconBubble.classList.toggle('hidden', count === 0);
         }
@@ -166,23 +166,25 @@
       renderQuoteCart();
     };
 
-    form.addEventListener('submit', () => {
-      const cart = getCart();
-      let formattedDetails = "Solicitud de Cotización:\n\n";
-      cart.forEach(item => {
-        formattedDetails += `----------------------------------------\n`;
-        formattedDetails += `Producto: ${item.title}\n`;
-        const options = (item.options_with_values || []).map(o => o.value).join(' / ');
-        if (options) formattedDetails += `Variante: ${options}\n`;
-        formattedDetails += `Cantidad: ${item.quantity}\n`;
-        formattedDetails += `Link: ${window.location.origin}/products/${item.handle}\n`;
-      });
-      formDetailsField.value = formattedDetails;
-      setTimeout(() => {
-          saveCart([]);
-          renderQuoteCart();
-      }, 500);
-    });
+    if (form) {
+        form.addEventListener('submit', () => {
+          const cart = getCart();
+          let formattedDetails = "Solicitud de Cotización:\n\n";
+          cart.forEach(item => {
+            formattedDetails += `----------------------------------------\n`;
+            formattedDetails += `Producto: ${item.title}\n`;
+            const options = (item.options_with_values || []).map(o => o.value).join(' / ');
+            if (options) formattedDetails += `Variante: ${options}\n`;
+            formattedDetails += `Cantidad: ${item.quantity}\n`;
+            formattedDetails += `Link: ${window.location.origin}/products/${item.handle}\n`;
+          });
+          formDetailsField.value = formattedDetails;
+          setTimeout(() => {
+              saveCart([]);
+              renderQuoteCart();
+          }, 500);
+        });
+    }
 
     document.addEventListener('quote:updated', updateIconCount);
     renderQuoteCart();
