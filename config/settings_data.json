@@ -252,7 +252,7 @@
       },
       "9901917232353999808": {
         "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
-        "disabled": false,
+        "disabled": true,
         "settings": {}
       }
     },
