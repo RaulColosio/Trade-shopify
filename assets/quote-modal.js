@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const quoteModal = {
     modal: document.getElementById('QuoteModal'),
-    opener: document.getElementById('quote-icon-opener'),
-    closeButton: null,
     itemsContainer: document.getElementById('quote-modal-items-container'),
     emptyMessage: document.getElementById('quote-modal-empty-message'),
     formContainer: document.getElementById('quote-modal-form-container'),
@@ -11,23 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
     itemTemplate: document.getElementById('quote-modal-item-template'),
 
     init: function() {
-      if (!this.modal || !this.opener || !this.itemTemplate) {
-        console.log('Quote Modal: Missing essential elements. Aborting initialization.');
-        return;
-      }
-      this.closeButton = this.modal.querySelector('.quote-modal__close');
+      if (!this.modal || !this.itemTemplate) return;
       this.addEventListeners();
       this.updateIconCount();
     },
 
     addEventListeners: function() {
-      this.opener.addEventListener('click', this.open.bind(this));
-      this.closeButton.addEventListener('click', this.close.bind(this));
-      this.modal.addEventListener('click', (event) => {
-        if (event.target === this.modal) {
+      // Use a single, delegated event listener on the document for robustness
+      document.addEventListener('click', (event) => {
+        // Handle opening
+        if (event.target.closest('#quote-icon-opener')) {
+          this.open();
+        }
+        // Handle closing
+        if (event.target.closest('.quote-modal__close') || event.target === this.modal) {
           this.close();
         }
       });
+
       document.addEventListener('quote:updated', this.updateIconCount.bind(this));
 
       if (this.form) {
@@ -73,12 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (cart.length === 0) {
         this.emptyMessage.style.display = 'block';
-        this.formContainer.style.display = 'none';
+        if (this.formContainer) this.formContainer.style.display = 'none';
         return;
       }
 
       this.emptyMessage.style.display = 'none';
-      this.formContainer.style.display = 'block';
+      if (this.formContainer) this.formContainer.style.display = 'block';
 
       cart.forEach(item => {
         const templateClone = this.itemTemplate.content.cloneNode(true);
@@ -89,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         templateClone.querySelector('.cart-item__name').textContent = item.title;
         templateClone.querySelector('.cart-item__name').href = `/products/${item.handle}`;
 
-        const optionsHtml = item.options_with_values.map(opt => `<p>${opt.name}: ${opt.value}</p>`).join('');
+        const optionsHtml = item.options_with_values.map(opt => `<p style="margin: 0;">${opt.name}: ${opt.value}</p>`).join('');
         templateClone.querySelector('.product-option').innerHTML = optionsHtml;
 
         templateClone.querySelector('.quantity__input').value = item.quantity;
@@ -128,14 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
         item.quantity = quantity;
       }
       this.saveCart(cart);
-      this.render(); // Re-render the modal content
+      this.render();
     },
 
     removeItem: function(id) {
       let cart = this.getCart();
       cart = cart.filter(i => i.id !== id);
       this.saveCart(cart);
-      this.render(); // Re-render the modal content
+      this.render();
     },
 
     handleFormSubmit: function() {
@@ -154,11 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       this.formDetailsField.value = formattedDetails;
 
-      // Optional: Clear cart after submission. Let's wait for the form to be successful.
-      // setTimeout(() => {
-      //   this.saveCart([]);
-      //   this.render();
-      // }, 1000);
+      // Clear cart after submission
+      setTimeout(() => {
+        this.saveCart([]);
+        this.close();
+      }, 500);
     }
   };
 
