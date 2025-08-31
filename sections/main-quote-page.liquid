@@ -1,0 +1,187 @@
+{{ 'base.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'quantity-input.css' | asset_url | stylesheet_tag }}
+
+<div class="page-width section-{{ section.id }}-padding">
+  <div class="title-wrapper-with-link">
+      <h1 class="title title--primary">Mi Cotización</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="underlined-link">Continuar Navegando</a>
+  </div>
+
+  <div id="quote-cart-contents" class="cart-items-wrapper">
+    <div id="quote-items-container" class="cart-items">
+      <!-- Items will be injected here by JavaScript -->
+    </div>
+    <div id="quote-empty-message" class="cart--empty-message" style="display: none;">
+      <h2 class="cart__empty-text">Tu cotizador está vacío</h2>
+      <a href="{{ routes.all_products_collection_url }}" class="button">
+        Continuar Navegando
+      </a>
+    </div>
+  </div>
+
+  <div id="quote-form-container" style="display: none; margin-top: 2rem;">
+    <div class="quote-form-wrapper">
+      <h2 class="title">Completa tus datos para enviar la cotización</h2>
+      {%- form 'contact', id: 'QuotePageForm' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="form-status form-status-success" tabindex="-1" autofocus>
+            Gracias por tu cotización. Nos pondremos en contacto contigo pronto.
+          </p>
+        {%- endif -%}
+        {%- if form.errors -%}
+          <div class="form__message" role="alert">
+            <h3 class="form-status form-status--error">{{ 'contact.form.error_heading' | t }}</h3>
+          </div>
+        {%- endif -%}
+        <div class="contact__fields">
+          <div class="field">
+            <input class="field__input" autocomplete="name" type="text" name="contact[name]" required placeholder="Nombre">
+            <label class="field__label">Nombre *</label>
+          </div>
+          <div class="field">
+            <input class="field__input" autocomplete="email" type="email" name="contact[email]" required placeholder="Correo electrónico">
+            <label class="field__label">Correo electrónico *</label>
+          </div>
+        </div>
+        <textarea name="contact[quote_details]" id="QuotePageForm-details" hidden></textarea>
+        <div class="contact__button">
+          <button type="submit" class="button">Enviar Cotización</button>
+        </div>
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+<template id="quote-item-template">
+  <div class="cart-item" data-variant-id="">
+    <div class="cart-item__media">
+      <img class="cart-item__image" src="" alt="" loading="lazy" width="150" height="150">
+    </div>
+    <div class="cart-item__details">
+      <a href="#" class="cart-item__name h4 break"></a>
+      <div class="product-option"></div>
+    </div>
+    <div class="cart-item__quantity">
+      <label class="visually-hidden"></label>
+      <quantity-input class="quantity">
+        <button class="quantity__button" name="minus" type="button">
+          <span class="visually-hidden">-</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-minus" fill="none" viewBox="0 0 10 2"><path fill-rule="evenodd" clip-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 110 1H1A.5.5 0 01.5 1z" fill="currentColor"></path></svg>
+        </button>
+        <input class="quantity__input" type="number" name="quantity" min="1" value="1">
+        <button class="quantity__button" name="plus" type="button">
+          <span class="visually-hidden">+</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-plus" fill="none" viewBox="0 0 10 10"><path fill-rule="evenodd" clip-rule="evenodd" d="M1 4.51a.5.5 0 000 1h3.5l.01 3.5a.5.5 0 001 0l-.01-3.5h3.5a.5.5 0 000-1h-3.5l-.01-3.5a.5.5 0 00-1 0l.01 3.5h-3.5z" fill="currentColor"></path></svg>
+        </button>
+      </quantity-input>
+    </div>
+     <div class="cart-item__remove">
+        <button name="remove" class="button button--tertiary link">Eliminar</button>
+      </div>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const quoteContainer = document.getElementById('quote-items-container');
+    const emptyMessage = document.getElementById('quote-empty-message');
+    const itemTemplate = document.getElementById('quote-item-template');
+    const formContainer = document.getElementById('quote-form-container');
+    const form = document.getElementById('QuotePageForm');
+    const formDetailsField = document.getElementById('QuotePageForm-details');
+
+    const getCart = () => JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+    const saveCart = (cart) => {
+      localStorage.setItem('customQuoteCart', JSON.stringify(cart));
+      document.dispatchEvent(new CustomEvent('quote:updated'));
+    };
+
+    const renderQuoteCart = () => {
+      const cart = getCart();
+      quoteContainer.innerHTML = '';
+
+      if (cart.length === 0) {
+        emptyMessage.style.display = 'block';
+        formContainer.style.display = 'none';
+        return;
+      }
+
+      emptyMessage.style.display = 'none';
+      formContainer.style.display = 'block';
+
+      cart.forEach(item => {
+        const templateClone = itemTemplate.content.cloneNode(true);
+        const itemElement = templateClone.querySelector('.cart-item');
+        itemElement.dataset.variantId = item.id;
+
+        templateClone.querySelector('.cart-item__image').src = item.image || '';
+        templateClone.querySelector('.cart-item__name').textContent = item.title;
+        templateClone.querySelector('.cart-item__name').href = `/products/${item.handle}`;
+
+        const optionsHtml = item.options_with_values.map(opt => `<p>${opt.name}: ${opt.value}</p>`).join('');
+        templateClone.querySelector('.product-option').innerHTML = optionsHtml;
+
+        const quantityInput = templateClone.querySelector('.quantity__input');
+        quantityInput.value = item.quantity;
+
+        // Add event listeners for the new item
+        const plusButton = templateClone.querySelector('[name="plus"]');
+        const minusButton = templateClone.querySelector('[name="minus"]');
+        const removeButton = templateClone.querySelector('[name="remove"]');
+
+        plusButton.addEventListener('click', () => updateItemQuantity(item.id, item.quantity + 1));
+        minusButton.addEventListener('click', () => updateItemQuantity(item.id, item.quantity - 1));
+        quantityInput.addEventListener('change', (e) => updateItemQuantity(item.id, parseInt(e.target.value, 10)));
+        removeButton.addEventListener('click', () => removeItem(item.id));
+
+        quoteContainer.appendChild(templateClone);
+      });
+    };
+
+    const updateItemQuantity = (id, quantity) => {
+      if (quantity < 1) {
+        removeItem(id);
+        return;
+      }
+      let cart = getCart();
+      const item = cart.find(i => i.id === id);
+      if (item) item.quantity = quantity;
+      saveCart(cart);
+      renderQuoteCart();
+    };
+
+    const removeItem = (id) => {
+      let cart = getCart().filter(i => i.id !== id);
+      saveCart(cart);
+      renderQuoteCart();
+    };
+
+    form.addEventListener('submit', () => {
+      const cart = getCart();
+      let formattedDetails = "Solicitud de Cotización:\n\n";
+      cart.forEach(item => {
+        formattedDetails += `----------------------------------------\n`;
+        formattedDetails += `Producto: ${item.title}\n`;
+        const options = item.options_with_values.map(o => o.value).join(' / ');
+        if (options) formattedDetails += `Variante: ${options}\n`;
+        formattedDetails += `Cantidad: ${item.quantity}\n`;
+        formattedDetails += `Link: ${window.location.origin}/products/${item.handle}\n`;
+      });
+      formDetailsField.value = formattedDetails;
+      setTimeout(() => saveCart([]), 500);
+    });
+
+    renderQuoteCart();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Quote Page",
+  "settings": []
+}
+{% endschema %}

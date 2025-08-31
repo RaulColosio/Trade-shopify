@@ -1,0 +1,42 @@
+{% comment %}
+  Renders the confirmation modal after adding an item to the quote cart.
+{% endcomment %}
+
+<style>
+  .added-to-quote-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 102;
+  }
+  .added-to-quote-modal[open] {
+    display: flex;
+  }
+  .added-to-quote-modal__content {
+    background-color: white;
+    padding: 2rem 3rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .added-to-quote-modal__buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+</style>
+
+<div id="AddedToQuoteModal" class="added-to-quote-modal">
+  <div class="added-to-quote-modal__content">
+    <p class="h4">Este producto se agregó a tu cotización</p>
+    <div class="added-to-quote-modal__buttons">
+      <button type="button" class="button button--secondary" id="ContinueExploringButton">Continua explorando</button>
+      <a href="{{ routes.root_url }}pages/cotizador" class="button button--primary">Revisar mi cotización</a>
+    </div>
+  </div>
+</div>

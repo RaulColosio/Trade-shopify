@@ -120,19 +120,8 @@
               {% endif %}
             >
               <span>
-                Solicitar Cotización
+                Solicitar cotización con impresión
               </span>
-              <div class="loading-overlay__spinner" hidden>
-                <svg
-                  aria-hidden="true"
-                  focusable="false"
-                  class="spinner"
-                  viewBox="0 0 66 66"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
-                </svg>
-              </div>
             </button>
           </div>
           {%- if show_dynamic_checkout -%}
@@ -158,36 +147,14 @@
 
   {%- if show_pickup_availability -%}
     {{ 'component-pickup-availability.css' | asset_url | stylesheet_tag }}
-
-    {%- assign pick_up_availabilities = product.selected_or_first_available_variant.store_availabilities
-      | where: 'pick_up_enabled', true
-    -%}
-
     <pickup-availability
       class="product__pickup-availabilities quick-add-hidden"
-      {% if product.selected_or_first_available_variant.available and pick_up_availabilities.size > 0 %}
-        available
-      {% endif %}
+      available
       data-root-url="{{ routes.root_url }}"
       data-variant-id="{{ product.selected_or_first_available_variant.id }}"
       data-has-only-default-variant="{{ product.has_only_default_variant }}"
-      data-product-page-color-scheme="gradient color-{{ section.settings.color_scheme }}"
     >
-      <template>
-        <pickup-availability-preview class="pickup-availability-preview">
-          <span class="svg-wrapper">
-            {{- 'icon-unavailable.svg' | inline_asset_content -}}
-          </span>
-          <div class="pickup-availability-info">
-            <p class="caption-large">{{ 'products.product.pickup_availability.unavailable' | t }}</p>
-            <button class="pickup-availability-button link link--text underlined-link">
-              {{ 'products.product.pickup_availability.refresh' | t }}
-            </button>
-          </div>
-        </pickup-availability-preview>
-      </template>
     </pickup-availability>
-
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>
@@ -195,12 +162,29 @@
 <script>
   (function() {
     const quoteButton = document.getElementById('ProductQuoteButton-{{ section_id }}');
-    if (!quoteButton) return;
+    const confirmationModal = document.getElementById('AddedToQuoteModal');
+    const continueExploringButton = document.getElementById('ContinueExploringButton');
+
+    if (!quoteButton || !confirmationModal || !continueExploringButton) return;
+
+    const getCart = () => JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+    const saveCart = (cart) => {
+      localStorage.setItem('customQuoteCart', JSON.stringify(cart));
+      document.dispatchEvent(new CustomEvent('quote:updated'));
+    };
+
+    const updateIconCount = () => {
+        const cart = getCart();
+        const countElement = document.getElementById('QuoteIcon-Badge-Count');
+        const iconBubble = document.getElementById('QuoteIcon-Bubble');
+        if (countElement && iconBubble) {
+            const count = cart.length;
+            countElement.textContent = count;
+            iconBubble.classList.toggle('hidden', count === 0);
+        }
+    };
 
     function addToQuoteStorage(variantId, quantity, productData) {
-      const getCart = () => JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
-      const saveCart = (cart) => localStorage.setItem('customQuoteCart', JSON.stringify(cart));
-
       const cart = getCart();
       const existingItem = cart.find(item => item.id === variantId);
 
@@ -217,17 +201,15 @@
 
         const optionsWithValues = [];
         if (productData.has_only_default_variant !== true) {
-          if (variant.option1) optionsWithValues.push({ name: productData.options[0].name, value: variant.option1 });
-          if (variant.option2) optionsWithValues.push({ name: productData.options[1].name, value: variant.option2 });
-          if (variant.option3) optionsWithValues.push({ name: productData.options[2].name, value: variant.option3 });
+            if (variant.option1) optionsWithValues.push({ name: productData.options[0].name, value: variant.option1 });
+            if (variant.option2) optionsWithValues.push({ name: productData.options[1].name, value: variant.option2 });
+            if (variant.option3) optionsWithValues.push({ name: productData.options[2].name, value: variant.option3 });
         }
 
         cart.push({
           id: variantId,
           quantity: parseInt(quantity, 10),
-          product_id: productData.id,
           title: productData.title,
-          price: variant.price,
           image: imageUrl,
           options_with_values: optionsWithValues,
           handle: productData.handle
@@ -241,21 +223,13 @@
 
       const productFormElement = quoteButton.closest('product-form');
       const form = productFormElement.querySelector('form');
-      if (!form) {
-        console.error("[BuyButtonsQuote] Could not find form element.");
-        return;
-      }
-
       const variantIdInput = form.querySelector('[name="id"]');
-      const variantId = variantIdInput ? variantIdInput.value : null;
-
       const quantityInput = form.querySelector('[name="quantity"]');
+
+      const variantId = variantIdInput ? variantIdInput.value : null;
       const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
 
-      if (!variantId) {
-        console.error("[BuyButtonsQuote] Could not find variant ID.");
-        return;
-      }
+      if (!variantId) return;
 
       const sectionId = productFormElement.dataset.sectionId;
       const productJsonScript = document.getElementById(`ProductJson-${sectionId}`);
@@ -263,21 +237,18 @@
       try {
         const productData = JSON.parse(productJsonScript.textContent);
         addToQuoteStorage(variantId, quantity, productData);
-
-        document.dispatchEvent(new CustomEvent('quote:updated'));
-
-        const buttonTextSpan = quoteButton.querySelector('span');
-        const originalText = buttonTextSpan.textContent;
-        quoteButton.disabled = true;
-        buttonTextSpan.textContent = '¡Añadido!';
-        setTimeout(() => {
-          buttonTextSpan.textContent = originalText;
-          quoteButton.disabled = false;
-        }, 2000);
-
+        confirmationModal.setAttribute('open', '');
       } catch (e) {
         console.error("[BuyButtonsQuote] Error:", e);
       }
     });
+
+    continueExploringButton.addEventListener('click', () => {
+      confirmationModal.removeAttribute('open');
+    });
+
+    // Initial update of the icon count on page load
+    document.addEventListener('DOMContentLoaded', updateIconCount);
+    document.addEventListener('quote:updated', updateIconCount);
   })();
 </script>
