@@ -1,111 +1,117 @@
-class QuoteCart {
-  constructor() {
-    this.cart = this.getCart();
-    this.initEventListeners();
-    this.updateIconCount();
-  }
-
-  getCart() {
-    const cart = localStorage.getItem('customQuoteCart');
-    return cart ? JSON.parse(cart) : [];
-  }
-
-  saveCart() {
-    localStorage.setItem('customQuoteCart', JSON.stringify(this.cart));
-  }
-
-  addToCart(variantId, quantity, productData) {
-    const existingItem = this.cart.find(item => item.id === variantId);
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      const variant = productData.variants.find(v => v.id === parseInt(variantId, 10));
-      if (!variant) {
-        console.error('Variant not found for ID:', variantId);
-        return;
+document.addEventListener('DOMContentLoaded', () => {
+  const quoteCart = {
+    getCart: function() {
+      try {
+        const cart = localStorage.getItem('customQuoteCart');
+        return cart ? JSON.parse(cart) : [];
+      } catch (e) {
+        console.error("Error getting quote cart from localStorage", e);
+        return [];
       }
+    },
+    saveCart: function(cart) {
+      try {
+        localStorage.setItem('customQuoteCart', JSON.stringify(cart));
+      } catch (e) {
+        console.error("Error saving quote cart to localStorage", e);
+      }
+    },
+    updateIconCount: function() {
+      const cart = this.getCart();
+      const countElement = document.getElementById('QuoteIcon-Badge-Count');
+      const iconBubble = document.getElementById('QuoteIcon-Bubble');
 
-      this.cart.push({
-        id: variantId,
-        quantity: quantity,
-        product_id: productData.id,
-        title: productData.title,
-        price: variant.price,
-        original_price: variant.compare_at_price,
-        image: variant.featured_image ? variant.featured_image.src : productData.featured_image,
-        options_with_values: variant.options_with_values,
-        handle: productData.handle
-      });
-    }
-    this.saveCart();
-    this.updateIconCount();
-  }
+      if (countElement && iconBubble) {
+        const count = cart.length;
+        countElement.textContent = count;
+        iconBubble.classList.toggle('hidden', count === 0);
+      }
+    },
+    addToCart: function(variantId, quantity, productData) {
+      console.log("[QuoteCart] Attempting to add to cart...");
+      const cart = this.getCart();
+      const existingItem = cart.find(item => item.id === variantId);
 
-  getCartCount() {
-    return this.cart.length;
-  }
-
-  updateIconCount() {
-    const countElement = document.getElementById('QuoteIcon-Badge-Count');
-    const iconBubble = document.getElementById('QuoteIcon-Bubble');
-
-    if (!countElement || !iconBubble) return;
-
-    const count = this.getCartCount();
-    countElement.textContent = count;
-    iconBubble.classList.toggle('hidden', count === 0);
-  }
-
-  initEventListeners() {
-    document.addEventListener('click', (event) => {
-      const quoteButton = event.target.closest('[name="add-to-quote"]');
-      if (quoteButton) {
-        event.preventDefault();
-
-        const form = quoteButton.closest('product-form');
-        if (!form) return;
-
-        const variantId = quoteButton.dataset.productId;
-        const quantityInput = form.querySelector('[name="quantity"]');
-        const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
-
-        const sectionId = form.dataset.sectionId;
-        const productJsonScript = document.getElementById(`ProductJson-${sectionId}`);
-
-        if (!productJsonScript) {
-          console.error('Product JSON script not found for section:', sectionId);
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        const variant = productData.variants.find(v => v.id === parseInt(variantId, 10));
+        if (!variant) {
+          console.error('[QuoteCart] ERROR: Variant not found in product data for ID:', variantId);
           return;
         }
 
-        const productData = JSON.parse(productJsonScript.textContent);
+        let imageUrl = productData.featured_image || null;
+        if (variant.featured_image) {
+          imageUrl = variant.featured_image.src;
+        }
 
-        const spinner = quoteButton.querySelector('.loading-overlay__spinner');
-        const buttonTextSpan = quoteButton.querySelector('span');
-        const originalText = buttonTextSpan ? buttonTextSpan.textContent.trim() : 'Solicitar Cotización';
-
-        if(spinner) spinner.hidden = false;
-        quoteButton.disabled = true;
-        if(buttonTextSpan) buttonTextSpan.textContent = 'Añadiendo...';
-
-        // Simulate adding to cart
-        setTimeout(() => {
-          this.addToCart(variantId, quantity, productData);
-
-          if(spinner) spinner.hidden = true;
-          if(buttonTextSpan) buttonTextSpan.textContent = '¡Añadido!';
-
-          setTimeout(() => {
-            quoteButton.disabled = false;
-            if(buttonTextSpan) buttonTextSpan.textContent = originalText;
-          }, 2000);
-        }, 500);
+        cart.push({
+          id: variantId,
+          quantity: quantity,
+          product_id: productData.id,
+          title: productData.title,
+          price: variant.price,
+          image: imageUrl,
+          options_with_values: variant.options_with_values,
+          handle: productData.handle
+        });
       }
-    });
-  }
-}
+      this.saveCart(cart);
+      this.updateIconCount();
+      console.log("[QuoteCart] Item added successfully. New cart:", cart);
+    }
+  };
 
-if (typeof QuoteCart !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new QuoteCart();
-  });
-}
+  function handleQuoteButtonClick(event) {
+    const quoteButton = event.target.closest('[name="add-to-quote"]');
+    if (!quoteButton) return;
+
+    console.log('[QuoteCart] "Solicitar Cotización" button clicked.');
+    event.preventDefault();
+
+    const productFormElement = quoteButton.closest('product-form');
+    if (!productFormElement) {
+      console.error('[QuoteCart] ERROR: Could not find parent <product-form> element.');
+      return;
+    }
+
+    const sectionId = productFormElement.dataset.sectionId;
+    if (!sectionId) {
+      console.error('[QuoteCart] ERROR: Could not find sectionId on product-form element.');
+      return;
+    }
+
+    const productJsonScript = document.getElementById(`ProductJson-${sectionId}`);
+    if (!productJsonScript) {
+      console.error(`[QuoteCart] ERROR: Could not find product JSON script with ID #ProductJson-${sectionId}`);
+      return;
+    }
+
+    try {
+      const productData = JSON.parse(productJsonScript.textContent);
+      const variantId = quoteButton.dataset.productId;
+      const quantityInput = productFormElement.querySelector('[name="quantity"]');
+      const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
+
+      quoteCart.addToCart(variantId, quantity, productData);
+
+      // UI Feedback
+      const buttonTextSpan = quoteButton.querySelector('span');
+      const originalText = buttonTextSpan.textContent;
+      quoteButton.disabled = true;
+      buttonTextSpan.textContent = '¡Añadido!';
+      setTimeout(() => {
+        buttonTextSpan.textContent = originalText;
+        quoteButton.disabled = false;
+      }, 2000);
+
+    } catch (e) {
+      console.error("[QuoteCart] Error processing product data or adding to cart:", e);
+    }
+  }
+
+  // Initial state setup
+  quoteCart.updateIconCount();
+  document.addEventListener('click', handleQuoteButtonClick);
+});
