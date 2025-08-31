@@ -115,7 +115,7 @@
               type="button"
               name="add-to-quote"
               class="button button--full-width button--primary"
-              data-product-id="{{ product.selected_or_first_available_variant.id }}"
+              {% comment %} The variant ID is now read from the form, not a data attribute {% endcomment %}
               {% if product.selected_or_first_available_variant == null %}
                 disabled
               {% endif %}
@@ -194,7 +194,6 @@
 </div>
 
 <script>
-  // This script now only handles adding to the quote cart and dispatching an event.
   (function() {
     const quoteButton = document.getElementById('ProductQuoteButton-{{ section_id }}');
     if (!quoteButton) return;
@@ -207,9 +206,9 @@
       const existingItem = cart.find(item => item.id === variantId);
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        existingItem.quantity = parseInt(existingItem.quantity, 10) + parseInt(quantity, 10);
       } else {
-        const variant = productData.variants.find(v => v.id === parseInt(variantId, 10));
+        const variant = productData.variants.find(v => v.id == variantId);
         if (!variant) return;
 
         let imageUrl = productData.featured_image || null;
@@ -217,23 +216,18 @@
           imageUrl = variant.featured_image.src;
         }
 
-        // Correctly build the options_with_values array
         const optionsWithValues = [];
-        if (productData.options && productData.options.length > 0) {
-            if (variant.option1 && productData.options[0]) {
-              optionsWithValues.push({ name: productData.options[0].name, value: variant.option1 });
-            }
-            if (variant.option2 && productData.options[1]) {
-              optionsWithValues.push({ name: productData.options[1].name, value: variant.option2 });
-            }
-            if (variant.option3 && productData.options[2]) {
-              optionsWithValues.push({ name: productData.options[2].name, value: variant.option3 });
+        if (productData.options && variant.options) {
+            for (let i = 0; i < productData.options.length; i++) {
+                if (variant[`option${i + 1}`]) {
+                    optionsWithValues.push({ name: productData.options[i].name, value: variant[`option${i + 1}`] });
+                }
             }
         }
 
         cart.push({
           id: variantId,
-          quantity: quantity,
+          quantity: parseInt(quantity, 10),
           product_id: productData.id,
           title: productData.title,
           price: variant.price,
@@ -249,15 +243,28 @@
       event.preventDefault();
 
       const productFormElement = quoteButton.closest('product-form');
+      const form = productFormElement.querySelector('form');
+      if (!form) {
+        console.error("[BuyButtonsQuote] Could not find form element.");
+        return;
+      }
+
+      const variantIdInput = form.querySelector('[name="id"]');
+      const variantId = variantIdInput ? variantIdInput.value : null;
+
+      const quantityInput = form.querySelector('[name="quantity"]');
+      const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
+
+      if (!variantId) {
+        console.error("[BuyButtonsQuote] Could not find variant ID.");
+        return;
+      }
+
       const sectionId = productFormElement.dataset.sectionId;
       const productJsonScript = document.getElementById(`ProductJson-${sectionId}`);
 
       try {
         const productData = JSON.parse(productJsonScript.textContent);
-        const variantId = quoteButton.dataset.productId;
-        const quantityInput = productFormElement.querySelector('[name="quantity"]');
-        const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
-
         addToQuoteStorage(variantId, quantity, productData);
 
         document.dispatchEvent(new CustomEvent('quote:updated'));
