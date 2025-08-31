@@ -112,10 +112,21 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    console.log('[QuotePage] DOMContentLoaded. Script starting.');
     const quoteContainer = document.getElementById('quote-items-container');
     const emptyMessage = document.getElementById('quote-empty-message');
     const itemTemplate = document.getElementById('quote-item-template');
-    let quoteCart = JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+    let quoteCart = [];
+
+    try {
+      quoteCart = JSON.parse(localStorage.getItem('customQuoteCart') || '[]');
+      console.log('[QuotePage] Found quote cart in localStorage:', quoteCart);
+    } catch (e) {
+      console.error('[QuotePage] Error parsing quote cart from localStorage:', e);
+      quoteCart = [];
+    }
+
+    console.log(`[QuotePage] Found ${quoteCart.length} items in cart.`);
 
     function renderQuoteCart() {
       quoteContainer.innerHTML = '';
@@ -127,7 +138,8 @@
       }
       emptyMessage.style.display = 'none';
 
-      quoteCart.forEach(item => {
+      quoteCart.forEach((item, index) => {
+        console.log(`[QuotePage] Rendering item ${index + 1}:`, item);
         const templateClone = itemTemplate.content.cloneNode(true);
         const cartItem = templateClone.querySelector('.cart-item');
         cartItem.dataset.variantId = item.id;
