@@ -1,3 +1,11 @@
+function openQuoteModal() {
+  const modal = document.getElementById('QuoteModal');
+  if (modal) {
+    modal.setAttribute('open', '');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const quoteModal = {
     modal: document.getElementById('QuoteModal'),
@@ -9,20 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
     itemTemplate: document.getElementById('quote-modal-item-template'),
 
     init: function() {
-      if (!this.modal || !this.itemTemplate) return;
+      if (!this.modal || !this.itemTemplate) {
+        console.log('Quote Modal: Missing essential elements. Aborting initialization.');
+        return;
+      }
       this.addEventListeners();
       this.updateIconCount();
+      // Expose a reference to the open method on the window object
+      window.openQuoteModal = this.open.bind(this);
     },
 
     addEventListeners: function() {
-      // Use a single, delegated event listener on the document for robustness
-      document.addEventListener('click', (event) => {
-        // Handle opening
-        if (event.target.closest('#quote-icon-opener')) {
-          this.open();
-        }
-        // Handle closing
-        if (event.target.closest('.quote-modal__close') || event.target === this.modal) {
+      const closeButton = this.modal.querySelector('.quote-modal__close');
+      if (closeButton) {
+        closeButton.addEventListener('click', this.close.bind(this));
+      }
+      this.modal.addEventListener('click', (event) => {
+        if (event.target === this.modal) {
           this.close();
         }
       });
@@ -153,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       this.formDetailsField.value = formattedDetails;
 
-      // Clear cart after submission
       setTimeout(() => {
         this.saveCart([]);
         this.close();
