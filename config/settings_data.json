@@ -144,19 +144,9 @@
     },
     "content_for_index": [],
     "blocks": {
-      "1232542678405107163": {
-        "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
-        "disabled": false,
-        "settings": {}
-      },
       "5439026248262864547": {
         "type": "shopify://apps/preorder-globo/blocks/app-embed/e547a0ad-8212-4bcc-b02f-761faa9b8af2",
         "disabled": true,
-        "settings": {}
-      },
-      "6053609962512334591": {
-        "type": "shopify://apps/preorder-bat/blocks/pre-order-block/6db3227b-acff-4966-bcdd-53204d4488c4",
-        "disabled": false,
         "settings": {}
       },
       "6097499278999377719": {
@@ -164,24 +154,9 @@
         "disabled": true,
         "settings": {}
       },
-      "9901917232353999808": {
-        "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
-        "disabled": false,
-        "settings": {}
-      },
       "9513407616245537438": {
         "type": "shopify://apps/sami-wholesale/blocks/app-embed-block/799b9db0-2c2b-4b20-8675-98acd123fbb2",
         "disabled": true,
-        "settings": {}
-      },
-      "12948015482042402483": {
-        "type": "shopify://apps/mercado-pago-antifraud-plus/blocks/embed-block/b19ea721-f94a-4308-bee5-0057c043bac5",
-        "disabled": false,
-        "settings": {}
-      },
-      "1854489755362259810": {
-        "type": "shopify://apps/pareto-order-limit/blocks/app-embed-block/6fbe20db-eadd-42b3-bc67-0e44a53ed12f",
-        "disabled": false,
         "settings": {}
       },
       "11813581335429059158": {
@@ -225,11 +200,6 @@
           "greeting_message": ""
         }
       },
-      "16212576608872179499": {
-        "type": "shopify://apps/sa-request-a-quote/blocks/app-embed-block/56d84fcb-37c7-4592-bb51-641b7ec5eef0",
-        "disabled": false,
-        "settings": {}
-      },
       "1900010302808700452": {
         "type": "shopify://apps/super-pinch-zoom/blocks/star_rating/ab7c7f82-c7c7-4520-9f92-6394fd695a86",
         "disabled": true,
@@ -237,12 +207,32 @@
       },
       "5061257265103808445": {
         "type": "shopify://apps/r-terms-conditions/blocks/embed-block/471882a9-9b1b-4918-8943-6c66b60c94ea",
-        "disabled": false,
+        "disabled": true,
+        "settings": {}
+      },
+      "8208493610395315515": {
+        "type": "shopify://apps/dondy-whatsapp-chat-marketing/blocks/app-block/7f5a70cb-e171-4cc7-ac02-e2220203abd6",
+        "disabled": true,
+        "settings": {}
+      },
+      "12948015482042402483": {
+        "type": "shopify://apps/mercado-pago-antifraud-plus/blocks/embed-block/b19ea721-f94a-4308-bee5-0057c043bac5",
+        "disabled": true,
+        "settings": {}
+      },
+      "1854489755362259810": {
+        "type": "shopify://apps/pareto-order-limit/blocks/app-embed-block/6fbe20db-eadd-42b3-bc67-0e44a53ed12f",
+        "disabled": true,
+        "settings": {}
+      },
+      "6053609962512334591": {
+        "type": "shopify://apps/preorder-bat/blocks/pre-order-block/6db3227b-acff-4966-bcdd-53204d4488c4",
+        "disabled": true,
         "settings": {}
       },
       "8746983209849429782": {
         "type": "shopify://apps/dealeasy/blocks/app-embed/e47a8634-0496-480d-9e46-6f7fafd34b30",
-        "disabled": false,
+        "disabled": true,
         "settings": {
           "dealeasy_public_access_token": "2663af93e7e8ab3cb4458bc7dbef71aa",
           "using_translated_handles": false,
@@ -250,9 +240,19 @@
           "custom_script_and_style": "<script></script>\n<style></style>"
         }
       },
-      "8208493610395315515": {
-        "type": "shopify://apps/dondy-whatsapp-chat-marketing/blocks/app-block/7f5a70cb-e171-4cc7-ac02-e2220203abd6",
-        "disabled": false,
+      "16212576608872179499": {
+        "type": "shopify://apps/sa-request-a-quote/blocks/app-embed-block/56d84fcb-37c7-4592-bb51-641b7ec5eef0",
+        "disabled": true,
+        "settings": {}
+      },
+      "1232542678405107163": {
+        "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
+        "disabled": true,
+        "settings": {}
+      },
+      "9901917232353999808": {
+        "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
+        "disabled": true,
         "settings": {}
       }
     },
