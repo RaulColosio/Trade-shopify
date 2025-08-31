@@ -1,8 +1,13 @@
 {% comment %}
-  Renders the quote icon for the header, linking to the quote page.
+  Renders the quote icon for the header. A button to open the modal.
 {% endcomment %}
-<a href="{{ routes.root_url }}pages/cotizador" class="header__icon header__icon--quote link focus-inset" id="quote-icon-bubble">
-  <span class="svg-wrapper" style="position: relative;">
+<style>
+  #quote-icon-opener {
+    position: relative; /* This is to correctly position the count bubble */
+  }
+</style>
+<button type="button" class="header__icon header__icon--quote link focus-inset" id="quote-icon-opener" onclick="window.openQuoteModal && window.openQuoteModal()">
+  <span class="svg-wrapper">
     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clipboard-text" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
@@ -10,9 +15,10 @@
       <path d="M9 12h6" />
       <path d="M9 16h6" />
     </svg>
-    <div id="QuoteIcon-Bubble" class="cart-count-bubble hidden">
-        <span id="QuoteIcon-Badge-Count" aria-hidden="true">0</span>
-    </div>
   </span>
   <span class="visually-hidden">Cotizador</span>
-</a>
+  <div id="QuoteIcon-Bubble" class="cart-count-bubble hidden">
+      <span id="QuoteIcon-Badge-Count" aria-hidden="true">0</span>
+      <span class="visually-hidden">artículos en la cotización</span>
+  </div>
+</button>
