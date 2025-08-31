@@ -179,11 +179,6 @@
         "disabled": false,
         "settings": {}
       },
-      "1854489755362259810": {
-        "type": "shopify://apps/pareto-order-limit/blocks/app-embed-block/6fbe20db-eadd-42b3-bc67-0e44a53ed12f",
-        "disabled": false,
-        "settings": {}
-      },
       "11813581335429059158": {
         "type": "shopify://apps/seedgrow-whatsapp-chat/blocks/app-embed/b85b5e45-9cea-417a-9b9e-0aa961ccf3ef",
         "disabled": true,
@@ -252,6 +247,11 @@
       },
       "16212576608872179499": {
         "type": "shopify://apps/sa-request-a-quote/blocks/app-embed-block/56d84fcb-37c7-4592-bb51-641b7ec5eef0",
+        "disabled": true,
+        "settings": {}
+      },
+      "1854489755362259810": {
+        "type": "shopify://apps/pareto-order-limit/blocks/app-embed-block/6fbe20db-eadd-42b3-bc67-0e44a53ed12f",
         "disabled": true,
         "settings": {}
       }
