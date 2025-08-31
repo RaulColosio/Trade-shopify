@@ -159,11 +159,6 @@
         "disabled": true,
         "settings": {}
       },
-      "9901917232353999808": {
-        "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
-        "disabled": false,
-        "settings": {}
-      },
       "9513407616245537438": {
         "type": "shopify://apps/sami-wholesale/blocks/app-embed-block/799b9db0-2c2b-4b20-8675-98acd123fbb2",
         "disabled": true,
@@ -252,6 +247,11 @@
       },
       "6053609962512334591": {
         "type": "shopify://apps/preorder-bat/blocks/pre-order-block/6db3227b-acff-4966-bcdd-53204d4488c4",
+        "disabled": true,
+        "settings": {}
+      },
+      "9901917232353999808": {
+        "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
         "disabled": true,
         "settings": {}
       }
