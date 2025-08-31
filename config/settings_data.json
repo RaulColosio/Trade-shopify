@@ -164,11 +164,6 @@
         "disabled": true,
         "settings": {}
       },
-      "12948015482042402483": {
-        "type": "shopify://apps/mercado-pago-antifraud-plus/blocks/embed-block/b19ea721-f94a-4308-bee5-0057c043bac5",
-        "disabled": false,
-        "settings": {}
-      },
       "11813581335429059158": {
         "type": "shopify://apps/seedgrow-whatsapp-chat/blocks/app-embed/b85b5e45-9cea-417a-9b9e-0aa961ccf3ef",
         "disabled": true,
@@ -252,6 +247,11 @@
       },
       "9901917232353999808": {
         "type": "shopify://apps/buddha-mega-menu-navigation/blocks/megamenu/dbb4ce56-bf86-4830-9b3d-16efbef51c6f",
+        "disabled": true,
+        "settings": {}
+      },
+      "12948015482042402483": {
+        "type": "shopify://apps/mercado-pago-antifraud-plus/blocks/embed-block/b19ea721-f94a-4308-bee5-0057c043bac5",
         "disabled": true,
         "settings": {}
       }
