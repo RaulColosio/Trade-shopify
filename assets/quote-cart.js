@@ -113,5 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial state setup
   quoteCart.updateIconCount();
-  document.addEventListener('click', handleQuoteButtonClick);
+  // Using event capturing (the 'true' flag) to bypass other scripts that might be stopping event propagation.
+  document.addEventListener('click', handleQuoteButtonClick, true);
 });
