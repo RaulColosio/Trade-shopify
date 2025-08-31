@@ -192,3 +192,19 @@
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const quoteButton = document.getElementById('ProductQuoteButton-{{ section_id }}');
+    if (quoteButton) {
+      console.log('[BuyButtons] Found the quote button.');
+      quoteButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        console.log('[BuyButtons] Quote button was clicked!');
+        alert('Quote button clicked!');
+      });
+    } else {
+      console.error('[BuyButtons] CRITICAL: Did not find the quote button by ID.');
+    }
+  });
+</script>
