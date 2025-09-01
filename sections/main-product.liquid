@@ -759,6 +759,18 @@
   </div>
 </product-info>
 
+<div id="quote-confirmation-modal" class="quote-modal" style="display: none;">
+  <div class="quote-modal-overlay" data-close-modal></div>
+  <div class="quote-modal-content">
+    <button type="button" class="quote-modal-close" data-close-modal>×</button>
+    <h3 class="h4">Este artículo ya se agregó a tu cotización</h3>
+    <div class="quote-modal-buttons">
+      <button type="button" id="quote-modal-continue" class="button" data-close-modal>Continua explorando</button>
+      <a href="{{ routes.root_url }}pages/cotizacion" class="button button--primary">Revisar mi cotización</a>
+    </div>
+  </div>
+</div>
+
 {% schema %}
 {
   "name": "t:sections.main-product.name",

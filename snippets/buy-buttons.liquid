@@ -93,6 +93,15 @@
             </span>
             {%- render 'loading-spinner' -%}
           </button>
+
+          <button
+            type="button"
+            id="add-to-quote-btn"
+            class="product-form__submit button button--full-width button--secondary"
+            style="margin-top: 1rem;"
+          >
+            <span>Solicitar cotización de impresión</span>
+          </button>
           {%- if show_dynamic_checkout -%}
             {{ form | payment_button }}
           {%- endif -%}

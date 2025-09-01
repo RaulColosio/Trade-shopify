@@ -1,0 +1,66 @@
+/*
+ * Quote Request Modal Styles
+ */
+.quote-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1050; /* High z-index to be on top of everything */
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+}
+
+.quote-modal.is-visible {
+  display: flex;
+}
+
+.quote-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.quote-modal-content {
+  position: relative;
+  background-color: #ffffff;
+  padding: 3rem;
+  border-radius: var(--popup-corner-radius, 8px);
+  text-align: center;
+  z-index: 1051;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: var(--popup-shadow-horizontal-offset, 0) var(--popup-shadow-vertical-offset, 20px) var(--popup-shadow-blur-radius, 40px) rgba(0,0,0,var(--popup-shadow-opacity, 0.1));
+}
+
+.quote-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-foreground);
+  padding: 0.5rem;
+}
+
+.quote-modal-buttons {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.quote-modal-buttons .button {
+  margin: 0;
+  text-decoration: none;
+}

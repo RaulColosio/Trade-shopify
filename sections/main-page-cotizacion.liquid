@@ -1,0 +1,170 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .quote-page-container {
+    padding: 30px 0;
+  }
+  .quote-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    font-size: 1.6rem;
+  }
+  .quote-table th, .quote-table td {
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 12px;
+    text-align: left;
+  }
+  .quote-table th {
+    background-color: #f5f5f5;
+  }
+  .quote-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+  }
+  .quote-item-remove {
+    color: red;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .quote-form-container {
+    max-width: 600px;
+  }
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+  }
+</style>
+
+<div class="customer page-width">
+  <div class="quote-page-container">
+    <h1>{{ page.title }}</h1>
+
+    <div id="quote-items-container">
+      <table class="quote-table">
+        <thead>
+          <tr>
+            <th colspan="2">Producto</th>
+            <th>Cantidad</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="quote-table-body">
+          <!-- Items will be injected here by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quote-form-container">
+      <h2>Completa tus datos para enviar la cotización</h2>
+      <div class="form-vertical">
+        {%- form 'contact', id: 'QuoteForm' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="form-success">
+              {{ 'contact.form.post_success' | t }}
+            </p>
+          {%- endif -%}
+
+          {{ form.errors | default_errors }}
+
+          <label for="ContactForm-name">{{ 'contact.form.name' | t }}</label>
+          <input type="text" id="ContactForm-name" name="contact[{{ 'contact.form.name' | t }}]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+
+          <label for="ContactForm-email">{{ 'contact.form.email' | t }}</label>
+          <input
+            type="email"
+            id="ContactForm-email"
+            name="contact[email]"
+            autocorrect="off"
+            autocapitalize="off"
+            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+            aria-required="true"
+            {% if form.errors contains 'email' %}
+              aria-invalid="true"
+              aria-describedby="ContactForm-email-error"
+            {% endif %}
+          >
+
+          <label for="ContactForm-phone">{{ 'contact.form.phone' | t }}</label>
+          <input type="tel" id="ContactForm-phone" name="contact[{{ 'contact.form.phone' | t }}]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+
+          <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
+
+          <button type="submit" id="quote-submit-button" class="button">
+            Enviar Cotización
+          </button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const quoteTableBody = document.getElementById('quote-table-body');
+    const quoteSummaryInput = document.getElementById('quote-summary-for-form');
+    const submitButton = document.getElementById('quote-submit-button');
+
+    function renderQuote() {
+      const quoteItems = window.QuoteManager.getQuote();
+
+      // Clear previous items
+      quoteTableBody.innerHTML = '';
+
+      if (quoteItems.length === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `<td colspan="4">Tu cotizador está vacío. Agrega productos para poder solicitar una cotización.</td>`;
+        quoteTableBody.appendChild(emptyRow);
+        submitButton.disabled = true;
+        quoteSummaryInput.value = 'El cotizador está vacío.';
+        return;
+      }
+
+      submitButton.disabled = false;
+
+      quoteItems.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <img src="${item.imageUrl || ''}" alt="${item.title}" class="quote-item-image">
+          </td>
+          <td>
+            <strong>${item.title}</strong><br>
+            ${item.variantTitle && item.variantTitle !== 'Default Title' ? `<span>${item.variantTitle}</span><br>` : ''}
+            <small>SKU: ${item.sku || 'N/A'}</small>
+          </td>
+          <td>${item.quantity}</td>
+          <td>
+            <span class="quote-item-remove" data-variant-id="${item.variantId}">Eliminar</span>
+          </td>
+        `;
+        quoteTableBody.appendChild(row);
+      });
+
+      quoteSummaryInput.value = window.QuoteManager.getQuoteSummary();
+    }
+
+    quoteTableBody.addEventListener('click', function(event) {
+      if (event.target.classList.contains('quote-item-remove')) {
+        const variantId = event.target.getAttribute('data-variant-id');
+        window.QuoteManager.removeFromQuote(variantId);
+        renderQuote(); // Re-render the table
+      }
+    });
+
+    // Initial render
+    renderQuote();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Página de Cotización",
+  "tag": "section",
+  "class": "customer"
+}
+{% endschema %}
