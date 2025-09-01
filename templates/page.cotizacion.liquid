@@ -55,6 +55,30 @@
     overflow: hidden;
     clip: rect(1px, 1px, 1px, 1px);
   }
+  .form-vertical > label,
+  .form-vertical > fieldset {
+    margin-top: 2rem;
+  }
+  .form__fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+  .form__fieldset legend {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .form__fieldset .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .form__fieldset .radio-group label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
 </style>
 
 <div class="customer page-width">
@@ -105,20 +129,24 @@
             <label for="ContactForm-phone">Whatsapp</label>
             <input type="tel" id="ContactForm-phone" name="contact[Whatsapp]" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
 
-            <fieldset class="form__fieldset" style="margin-top: 1.5rem; padding: 0; border: none;">
+            <fieldset class="form__fieldset">
               <legend class="form__label">¿Entrega?</legend>
-              <input type="radio" id="entrega-recojo" name="contact[Entrega]" value="¡Yo paso por ellos!"><label for="entrega-recojo" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">¡Yo paso por ellos!</label>
-              <input type="radio" id="entrega-local" name="contact[Entrega]" value="Entrega local en Monterrey."><label for="entrega-local" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">Entrega local en Monterrey.</label>
-              <input type="radio" id="entrega-nacional" name="contact[Entrega]" value="Envío nacional."><label for="entrega-nacional" style="margin-left: 0.5rem; font-weight: normal;">Envío nacional.</label>
+              <div class="radio-group">
+                <label for="entrega-recojo"><input type="radio" id="entrega-recojo" name="contact[Entrega]" value="¡Yo paso por ellos!">¡Yo paso por ellos!</label>
+                <label for="entrega-local"><input type="radio" id="entrega-local" name="contact[Entrega]" value="Entrega local en Monterrey.">Entrega local en Monterrey.</label>
+                <label for="entrega-nacional"><input type="radio" id="entrega-nacional" name="contact[Entrega]" value="Envío nacional.">Envío nacional.</label>
+              </div>
             </fieldset>
 
             <label for="ContactForm-zip">Código postal de envío</label>
             <input type="text" id="ContactForm-zip" name="contact[Código postal de envío]">
 
-            <fieldset class="form__fieldset" style="margin-top: 1.5rem; padding: 0; border: none;">
+            <fieldset class="form__fieldset">
               <legend class="form__label">¿Con impresión?</legend>
-              <input type="radio" id="impresion-si" name="contact[Impresión]" value="Con impresión"><label for="impresion-si" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">Con impresión</label>
-              <input type="radio" id="impresion-no" name="contact[Impresión]" value="Sin impresión"><label for="impresion-no" style="margin-left: 0.5rem; font-weight: normal;">Sin impresión</label>
+              <div class="radio-group">
+                <label for="impresion-si"><input type="radio" id="impresion-si" name="contact[Impresión]" value="Con impresión">Con impresión</label>
+                <label for="impresion-no"><input type="radio" id="impresion-no" name="contact[Impresión]" value="Sin impresión">Sin impresión</label>
+              </div>
             </fieldset>
 
             <label for="ContactForm-details" style="margin-top: 1.5rem;">Cuéntanos todos los detalles:</label>
