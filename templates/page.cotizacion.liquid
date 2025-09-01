@@ -88,26 +88,43 @@
 
             {{ form.errors | default_errors }}
 
-            <label for="ContactForm-name">{{ 'contact.form.name' | t }}</label>
-            <input type="text" id="ContactForm-name" name="contact[{{ 'contact.form.name' | t }}]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 200px;">
+                <label for="ContactForm-name">Nombre</label>
+                <input type="text" id="ContactForm-name" name="contact[Nombre]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
+              </div>
+              <div style="flex: 1; min-width: 200px;">
+                <label for="ContactForm-lastname">Apellido</label>
+                <input type="text" id="ContactForm-lastname" name="contact[Apellido]" value="{% if form.lastname %}{{ form.lastname }}{% elsif customer %}{{ customer.last_name }}{% endif %}" required>
+              </div>
+            </div>
 
-            <label for="ContactForm-email">{{ 'contact.form.email' | t }}</label>
-            <input
-              type="email"
-              id="ContactForm-email"
-              name="contact[email]"
-              autocorrect="off"
-              autocapitalize="off"
-              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
-              aria-required="true"
-              {% if form.errors contains 'email' %}
-                aria-invalid="true"
-                aria-describedby="ContactForm-email-error"
-              {% endif %}
-            >
+            <label for="ContactForm-email">Correo</label>
+            <input type="email" id="ContactForm-email" name="contact[Correo]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
 
-            <label for="ContactForm-phone">{{ 'contact.form.phone' | t }}</label>
-            <input type="tel" id="ContactForm-phone" name="contact[{{ 'contact.form.phone' | t }}]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+            <label for="ContactForm-phone">Whatsapp</label>
+            <input type="tel" id="ContactForm-phone" name="contact[Whatsapp]" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
+
+            <fieldset class="form__fieldset" style="margin-top: 1.5rem; padding: 0; border: none;">
+              <legend class="form__label">¿Entrega?</legend>
+              <input type="radio" id="entrega-recojo" name="contact[Entrega]" value="¡Yo paso por ellos!"><label for="entrega-recojo" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">¡Yo paso por ellos!</label>
+              <input type="radio" id="entrega-local" name="contact[Entrega]" value="Entrega local en Monterrey."><label for="entrega-local" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">Entrega local en Monterrey.</label>
+              <input type="radio" id="entrega-nacional" name="contact[Entrega]" value="Envío nacional."><label for="entrega-nacional" style="margin-left: 0.5rem; font-weight: normal;">Envío nacional.</label>
+            </fieldset>
+
+            <label for="ContactForm-zip">Código postal de envío</label>
+            <input type="text" id="ContactForm-zip" name="contact[Código postal de envío]">
+
+            <fieldset class="form__fieldset" style="margin-top: 1.5rem; padding: 0; border: none;">
+              <legend class="form__label">¿Con impresión?</legend>
+              <input type="radio" id="impresion-si" name="contact[Impresión]" value="Con impresión"><label for="impresion-si" style="margin-left: 0.5rem; margin-right: 1.5rem; font-weight: normal;">Con impresión</label>
+              <input type="radio" id="impresion-no" name="contact[Impresión]" value="Sin impresión"><label for="impresion-no" style="margin-left: 0.5rem; font-weight: normal;">Sin impresión</label>
+            </fieldset>
+
+            <label for="ContactForm-details" style="margin-top: 1.5rem;">Cuéntanos todos los detalles:</label>
+            <textarea rows="7" id="ContactForm-details" name="contact[Detalles]"></textarea>
+
+            <p style="font-size: 1.2rem; opacity: 0.8; margin-top: 1.5rem;">Si tu pedido requiere un diseño, te contactaremos por correo después de recibir tu solicitud para que nos lo envíes.</p>
 
             <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
 
