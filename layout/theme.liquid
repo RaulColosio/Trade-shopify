@@ -440,6 +440,7 @@
 </script>
 
 {{ 'quote-logic.js' | asset_url | script_tag }}
+{{ 'quote-header-counter.js' | asset_url | script_tag }}
 {%- if template.name == 'product' -%}
   {{ 'product-quote-handler.js' | asset_url | script_tag }}
 {%- endif -%}

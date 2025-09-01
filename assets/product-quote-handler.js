@@ -94,6 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.QuoteManager.addToQuote(variantId, quantity, productInfo);
 
+    // Dispatch a custom event so other parts of the site can react
+    document.dispatchEvent(new CustomEvent('quote:changed'));
+
     openModal();
   });
 });

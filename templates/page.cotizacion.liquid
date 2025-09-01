@@ -110,9 +110,14 @@
     const submitButton = document.getElementById('quote-submit-button');
 
     function renderQuote() {
+      if (!window.QuoteManager) {
+        console.error('QuoteManager is not available.');
+        quoteTableBody.innerHTML = `<tr><td colspan="4">Error: No se pudo cargar el gestor de cotizaciones.</td></tr>`;
+        return;
+      }
+
       const quoteItems = window.QuoteManager.getQuote();
 
-      // Clear previous items
       quoteTableBody.innerHTML = '';
 
       if (quoteItems.length === 0) {
@@ -139,7 +144,7 @@
           </td>
           <td>${item.quantity}</td>
           <td>
-            <span class="quote-item-remove" data-variant-id="${item.variantId}">Eliminar</span>
+            <span class="quote-item-remove" data-variant-id="${item.variantId}" style="cursor: pointer; text-decoration: underline;">Eliminar</span>
           </td>
         `;
         quoteTableBody.appendChild(row);
@@ -152,19 +157,10 @@
       if (event.target.classList.contains('quote-item-remove')) {
         const variantId = event.target.getAttribute('data-variant-id');
         window.QuoteManager.removeFromQuote(variantId);
-        renderQuote(); // Re-render the table
+        renderQuote();
       }
     });
 
-    // Initial render
     renderQuote();
   });
 </script>
-
-{% schema %}
-{
-  "name": "Página de Cotización",
-  "tag": "section",
-  "class": "customer"
-}
-{% endschema %}
