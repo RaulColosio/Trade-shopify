@@ -35,11 +35,17 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 3rem;
+    align-items: start;
   }
-  @media (min-width: 750px) {
+  @media (min-width: 990px) {
     .quote-grid-layout {
       grid-template-columns: 2fr 1fr;
     }
+  }
+  .quote-grid-layout > div {
+    background-color: #FFFFFF;
+    padding: 2.5rem;
+    border-radius: var(--card-corner-radius, 8px);
   }
   .visually-hidden {
     position: absolute !important;
@@ -50,7 +56,7 @@
   }
 </style>
 
-<div class="customer page-width color-scheme-2">
+<div class="customer page-width">
   <div class="quote-page-container">
     <h1>{{ page.title }}</h1>
     <div class="quote-grid-layout">
