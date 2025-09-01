@@ -17,16 +17,6 @@
   display: flex;
 }
 
-.quote-modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6) !important;
-  cursor: pointer;
-}
-
 .quote-modal-content {
   position: relative;
   background-color: #ffffff;
