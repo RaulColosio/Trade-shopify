@@ -66,6 +66,27 @@ window.QuoteManager = {
   },
 
   /**
+   * Updates the quantity of a specific item in the quote.
+   * @param {string|number} variantId - The ID of the product variant to update.
+   * @param {number} newQuantity - The new quantity.
+   */
+  updateQuantity: function(variantId, newQuantity) {
+    let quote = this.getQuote();
+    const itemIndex = quote.findIndex(item => item.variantId == variantId);
+
+    if (itemIndex > -1) {
+      const quantity = parseInt(newQuantity, 10);
+      if (quantity > 0) {
+        quote[itemIndex].quantity = quantity;
+        this.saveQuote(quote);
+      } else {
+        // If quantity is 0 or less, remove the item
+        this.removeFromQuote(variantId);
+      }
+    }
+  },
+
+  /**
    * Generates a summary of the quote for the email body.
    * @returns {string} A formatted string of the quote items.
    */
