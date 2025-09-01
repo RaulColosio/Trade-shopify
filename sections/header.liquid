@@ -271,9 +271,7 @@
       {%- endfor -%}
 
       <a href="{{ routes.root_url }}pages/quote-review" class="header__icon header__icon--quote link focus-inset" id="quote-icon-bubble">
-        <span class="svg-wrapper">
-          {{ 'icon-price-tag.svg' | inline_asset_content }}
-        </span>
+        <img src="{{ 'icon-price-tag.svg' | asset_url }}" alt="Cotizador" width="22" height="22" style="vertical-align: middle;">
         <span class="visually-hidden">Cotizador</span>
         <div class="quote-count-bubble cart-count-bubble" style="display: none;">
           <span aria-hidden="true">0</span>
