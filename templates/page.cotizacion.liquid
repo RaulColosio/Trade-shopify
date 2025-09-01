@@ -31,6 +31,16 @@
   .quote-form-container {
     max-width: 600px;
   }
+  .quote-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  @media (min-width: 750px) {
+    .quote-grid-layout {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
   .visually-hidden {
     position: absolute !important;
     height: 1px;
@@ -43,61 +53,62 @@
 <div class="customer page-width color-scheme-2">
   <div class="quote-page-container">
     <h1>{{ page.title }}</h1>
+    <div class="quote-grid-layout">
+      <div id="quote-items-container">
+        <table class="quote-table">
+          <thead>
+            <tr>
+              <th colspan="2">Producto</th>
+              <th>Cantidad</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="quote-table-body">
+            <!-- Items will be injected here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
 
-    <div id="quote-items-container">
-      <table class="quote-table">
-        <thead>
-          <tr>
-            <th colspan="2">Producto</th>
-            <th>Cantidad</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="quote-table-body">
-          <!-- Items will be injected here by JavaScript -->
-        </tbody>
-      </table>
-    </div>
+      <div class="quote-form-container">
+        <h2>Completa tus datos para enviar la cotización</h2>
+        <div class="form-vertical">
+          {%- form 'contact', id: 'QuoteForm' -%}
+            {%- if form.posted_successfully? -%}
+              <p class="form-success">
+                {{ 'contact.form.post_success' | t }}
+              </p>
+            {%- endif -%}
 
-    <div class="quote-form-container">
-      <h2>Completa tus datos para enviar la cotización</h2>
-      <div class="form-vertical">
-        {%- form 'contact', id: 'QuoteForm' -%}
-          {%- if form.posted_successfully? -%}
-            <p class="form-success">
-              {{ 'contact.form.post_success' | t }}
-            </p>
-          {%- endif -%}
+            {{ form.errors | default_errors }}
 
-          {{ form.errors | default_errors }}
+            <label for="ContactForm-name">{{ 'contact.form.name' | t }}</label>
+            <input type="text" id="ContactForm-name" name="contact[{{ 'contact.form.name' | t }}]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
 
-          <label for="ContactForm-name">{{ 'contact.form.name' | t }}</label>
-          <input type="text" id="ContactForm-name" name="contact[{{ 'contact.form.name' | t }}]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+            <label for="ContactForm-email">{{ 'contact.form.email' | t }}</label>
+            <input
+              type="email"
+              id="ContactForm-email"
+              name="contact[email]"
+              autocorrect="off"
+              autocapitalize="off"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              aria-required="true"
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+                aria-describedby="ContactForm-email-error"
+              {% endif %}
+            >
 
-          <label for="ContactForm-email">{{ 'contact.form.email' | t }}</label>
-          <input
-            type="email"
-            id="ContactForm-email"
-            name="contact[email]"
-            autocorrect="off"
-            autocapitalize="off"
-            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
-            aria-required="true"
-            {% if form.errors contains 'email' %}
-              aria-invalid="true"
-              aria-describedby="ContactForm-email-error"
-            {% endif %}
-          >
+            <label for="ContactForm-phone">{{ 'contact.form.phone' | t }}</label>
+            <input type="tel" id="ContactForm-phone" name="contact[{{ 'contact.form.phone' | t }}]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
 
-          <label for="ContactForm-phone">{{ 'contact.form.phone' | t }}</label>
-          <input type="tel" id="ContactForm-phone" name="contact[{{ 'contact.form.phone' | t }}]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+            <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
 
-          <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
-
-          <button type="submit" id="quote-submit-button" class="button">
-            Enviar Cotización
-          </button>
-        {%- endform -%}
+            <button type="submit" id="quote-submit-button" class="button">
+              Enviar Cotización
+            </button>
+          {%- endform -%}
+        </div>
       </div>
     </div>
   </div>
@@ -135,10 +146,14 @@
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>
-            <img src="${item.imageUrl || ''}" alt="${item.title}" class="quote-item-image">
+            <a href="${item.url || '#'}" title="${item.title}">
+              <img src="${item.imageUrl || ''}" alt="${item.title}" class="quote-item-image">
+            </a>
           </td>
           <td>
-            <strong>${item.title}</strong><br>
+            <a href="${item.url || '#'}" style="text-decoration: none; color: inherit;">
+              <strong>${item.title}</strong>
+            </a><br>
             ${item.variantTitle && item.variantTitle !== 'Default Title' ? `<span>${item.variantTitle}</span><br>` : ''}
             <small>SKU: ${item.sku || 'N/A'}</small>
           </td>
