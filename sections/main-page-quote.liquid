@@ -92,6 +92,9 @@
               </tbody>
             </table>
         </section>
+
+        {% comment %} The Shopify Forms app will inject the form here if configured correctly {% endcomment %}
+
   </main>
 </div>
 
@@ -158,24 +161,26 @@
     });
 
     function injectAndHideQuoteSummary() {
-      // The ID from the user contains a '#' which must be escaped in CSS selectors.
-      // We are looking for the textarea, which we assume has the same ID as the label's 'for' attribute.
-      const fieldId = "label-custom\\#resumen_de_cotizacion";
-      const summaryField = document.querySelector(`textarea[id="${fieldId}"]`);
+      const labels = document.querySelectorAll('label.shopify-form__label');
+      let summaryField = null;
+      let fieldWrapper = null;
 
-      if (summaryField) {
-        const fieldWrapper = summaryField.closest('.shopify-form__field');
-        if (fieldWrapper) {
-          fieldWrapper.style.display = 'none';
+      labels.forEach(label => {
+        if (label.textContent.trim() === 'Resumen de Cotizacion') {
+          const fieldId = label.getAttribute('for');
+          summaryField = document.getElementById(fieldId);
+          fieldWrapper = label.closest('.shopify-form__field');
         }
+      });
+
+      if (summaryField && fieldWrapper) {
         summaryField.value = window.QuoteManager.getQuoteSummary();
-        console.log('Quote summary injected and field hidden successfully.');
-        return true; // Success
+        fieldWrapper.style.display = 'none';
+        return true;
       }
-      return false; // Not found yet
+      return false;
     }
 
-    // Shopify Forms can load after the initial DOM. We need to wait for it.
     let attempts = 0;
     const maxAttempts = 10;
     const interval = setInterval(() => {
@@ -183,9 +188,6 @@
       const success = injectAndHideQuoteSummary();
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
-        if (!success) {
-          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
-        }
       }
     }, 500);
 
@@ -195,7 +197,7 @@
 
 {% schema %}
   {
-    "name": "Página Cotizacion",
+    "name": "Página Principal de Cotización (RFQ)",
     "tag": "section",
     "settings": []
   }

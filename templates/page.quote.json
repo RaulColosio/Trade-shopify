@@ -1,0 +1,11 @@
+{
+  "name": "Quote",
+  "sections": {
+    "main": {
+      "type": "main-page-quote"
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
