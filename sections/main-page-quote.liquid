@@ -158,20 +158,24 @@
     });
 
     function injectAndHideQuoteSummary() {
-      // Find the textarea directly by its unique name attribute.
-      const summaryField = document.querySelector('textarea[name="custom#resumen_de_cotizacion"]');
+      const labels = document.querySelectorAll('label.shopify-form__label');
+      let summaryField = null;
+      let fieldWrapper = null;
 
-      if (summaryField) {
-        // Find the parent container to hide everything.
-        const fieldWrapper = summaryField.closest('._formFieldContainer_ck6wz_5');
-        if (fieldWrapper) {
-          fieldWrapper.style.display = 'none';
+      labels.forEach(label => {
+        if (label.textContent.trim() === 'Resumen de Cotizacion') {
+          const fieldId = label.getAttribute('for');
+          summaryField = document.getElementById(fieldId);
+          fieldWrapper = label.closest('.shopify-form__field');
         }
+      });
+
+      if (summaryField && fieldWrapper) {
         summaryField.value = window.QuoteManager.getQuoteSummary();
-        console.log('Quote summary injected and field hidden successfully.');
-        return true; // Success!
+        fieldWrapper.style.display = 'none';
+        return true;
       }
-      return false; // Field not found, will retry.
+      return false;
     }
 
     // Shopify Forms can load after the initial DOM. We need to wait for it.
