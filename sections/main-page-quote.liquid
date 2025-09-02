@@ -158,26 +158,35 @@
     });
 
     function injectAndHideQuoteSummary() {
-      const labels = document.querySelectorAll('label.shopify-form__label');
-      let summaryField = null;
-      let fieldWrapper = null;
+      // Find the label by its text content, which is more reliable than a generated ID.
+      const allLabels = Array.from(document.querySelectorAll('label'));
+      const summaryLabel = allLabels.find(l => l.textContent.trim() === 'Resumen de Cotizacion');
 
-      labels.forEach(label => {
-        if (label.textContent.trim() === 'Resumen de Cotizacion') {
-          const fieldId = label.getAttribute('for');
-          summaryField = document.getElementById(fieldId);
-          fieldWrapper = label.closest('.shopify-form__field');
-        }
-      });
-
-      if (summaryField && fieldWrapper) {
-        summaryField.value = window.QuoteManager.getQuoteSummary();
-        fieldWrapper.style.display = 'none';
-        return true;
+      if (!summaryLabel) {
+        return false; // Label not found yet, will retry.
       }
-      return false;
+
+      const fieldId = summaryLabel.getAttribute('for');
+      if (!fieldId) {
+        return false; // Label found but has no 'for' attribute.
+      }
+
+      // Find the field using the ID from the label's 'for' attribute.
+      const summaryField = document.getElementById(fieldId);
+
+      if (summaryField) {
+        const fieldWrapper = summaryField.closest('.shopify-form__field');
+        if (fieldWrapper) {
+          fieldWrapper.style.display = 'none';
+        }
+        summaryField.value = window.QuoteManager.getQuoteSummary();
+        console.log('Quote summary injected and field hidden successfully.');
+        return true; // Success!
+      }
+      return false; // Field not found, will retry.
     }
 
+    // Shopify Forms can load after the initial DOM. We need to wait for it.
     let attempts = 0;
     const maxAttempts = 10;
     const interval = setInterval(() => {
@@ -185,6 +194,9 @@
       const success = injectAndHideQuoteSummary();
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
+        if (!success) {
+          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
+        }
       }
     }, 500);
 
