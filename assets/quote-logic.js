@@ -110,7 +110,6 @@ window.QuoteManager = {
     });
     summary += `----------------------------------------\n\n`;
 
-    // Replace newlines with <br> tags for HTML email compatibility.
-    return summary.replace(/\n/g, '<br>\n');
+    return summary;
   }
 };
