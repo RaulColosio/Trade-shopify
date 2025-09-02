@@ -165,9 +165,9 @@
             <table class="quote-table">
               <thead>
                 <tr>
-                  <th style="width: 50%;">PRODUCTO</th>
-                  <th style="width: 25%; text-align: center;">CANTIDAD</th>
-                  <th style="width: 25%;"></th>
+                  <th style="width: 60%;">PRODUCTO</th>
+                  <th style="width: 20%; text-align: center;">CANTIDAD</th>
+                  <th style="width: 20%; text-align: right;">QUITAR</th>
                 </tr>
               </thead>
               <tbody id="quote-table-body">
@@ -288,22 +288,20 @@
       quoteItems.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>
-            <a href="${item.url || '#'}" title="${item.title}">
+          <td style="display: flex; align-items: flex-start; gap: 1rem;">
+            <a href="${item.url || '#'}">
               <img src="${item.imageUrl || ''}" alt="${item.title}" class="quote-item-image">
             </a>
+            <div>
+              <a href="${item.url || '#'}" style="text-decoration: none; color: inherit; font-weight: 600;">${item.title}</a>
+              ${item.variantTitle && item.variantTitle !== 'Default Title' ? `<br><span style="font-size: 1.3rem; color: #6b7280;">${item.variantTitle}</span>` : ''}
+              ${item.sku ? `<br><small style="font-size: 1.2rem; color: #6b7280;">SKU: ${item.sku}</small>` : ''}
+            </div>
           </td>
-          <td>
-            <a href="${item.url || '#'}" style="text-decoration: none; color: inherit;">
-              <strong>${item.title}</strong>
-            </a><br>
-            ${item.variantTitle && item.variantTitle !== 'Default Title' ? `<span>${item.variantTitle}</span><br>` : ''}
-            <small>SKU: ${item.sku || 'N/A'}</small>
+          <td style="text-align: center;">
+            <input type="number" class="quote-quantity-input" value="${item.quantity}" min="0" data-variant-id="${item.variantId}">
           </td>
-          <td>
-            <input type="number" class="quote-quantity-input" value="${item.quantity}" min="0" data-variant-id="${item.variantId}" style="width: 60px; padding: 5px;">
-          </td>
-          <td>
+          <td style="text-align: right;">
             <span class="quote-item-remove" data-variant-id="${item.variantId}" style="cursor: pointer; display: inline-block; width: 20px; height: 20px;">
               {{ 'icon-remove.svg' | asset_url | img_tag | replace: '<img', '<img style="width:100%;"' }}
             </span>
