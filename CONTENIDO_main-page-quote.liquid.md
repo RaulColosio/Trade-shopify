@@ -92,6 +92,9 @@
               </tbody>
             </table>
         </section>
+
+        {% comment %} The Shopify Forms app will inject the form here if configured correctly in the Theme Editor {% endcomment %}
+
   </main>
 </div>
 
@@ -196,6 +199,11 @@
   {
     "name": "Página de Cotización",
     "tag": "section",
-    "settings": []
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Esta es la sección principal para la página de cotización. La lista de productos se muestra aquí. El formulario de contacto debe ser añadido como un bloque de app desde el editor de temas."
+      }
+    ]
   }
 {% endschema %}
