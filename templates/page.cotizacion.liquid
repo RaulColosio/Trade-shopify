@@ -265,7 +265,6 @@
     const submitButton = document.getElementById('quote-submit-button');
     const modal = document.getElementById('quote-confirmation-modal');
 
-    // --- Main render function ---
     function renderQuote() {
       if (!window.QuoteManager) {
         console.error('QuoteManager is not available.');
@@ -310,7 +309,6 @@
       document.dispatchEvent(new CustomEvent('quote:changed'));
     }
 
-    // --- Event Listeners ---
     quoteTableBody.addEventListener('click', function(event) {
       const removeButton = event.target.closest('.quote-item-remove');
       if (removeButton) {
@@ -328,37 +326,6 @@
       }
     });
 
-    if (quoteForm) {
-      quoteForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const submitButtonText = submitButton.textContent;
-        submitButton.textContent = 'Enviando...';
-        submitButton.disabled = true;
-
-        const formData = new FormData(quoteForm);
-
-        fetch('/contact', {
-          method: 'POST',
-          body: formData,
-        })
-        .then(response => {
-          if (response.ok) {
-            showSuccessModal();
-          } else {
-            alert('Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo.');
-            submitButton.textContent = submitButtonText;
-            submitButton.disabled = false;
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Hubo un error de red al enviar tu solicitud. Por favor, revisa tu conexión e inténtalo de nuevo.');
-          submitButton.textContent = submitButtonText;
-          submitButton.disabled = false;
-        });
-      });
-    }
-
     function showSuccessModal() {
       if (!modal) return;
 
@@ -366,6 +333,7 @@
       const whatsappIcon = `{{ 'icon-chat-bubble.svg' | asset_url | img_tag | replace: '<img', '<img style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"' }}`;
 
       modalContent.innerHTML = `
+        <button type="button" class="quote-modal-close" data-redirect-home>×</button>
         <h3 class="h4">¡Gracias por tu mensaje!</h3>
         <p style="margin: 1.5rem 0;">Revisaremos todos los detalles y nos pondremos en contacto contigo.</p>
         <p>Mientras tanto, puedes navegar en nuestra página o enviarnos un Whatsapp para una comunicación más rápida.</p>
@@ -373,7 +341,6 @@
           ${whatsappIcon}
           Enviar WhatsApp
         </a>
-        <button type="button" class="quote-modal-close" data-redirect-home>×</button>
       `;
 
       modal.style.display = 'flex';
@@ -385,7 +352,13 @@
       }, { once: true });
     }
 
-    // Initial render
+    // Check if the form was successfully submitted on page load
+    const successMessage = document.querySelector('.form-success');
+    if (successMessage) {
+      showSuccessModal();
+      successMessage.style.display = 'none'; // Hide the original message
+    }
+
     renderQuote();
   });
 </script>
