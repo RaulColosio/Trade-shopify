@@ -1,0 +1,11 @@
+{
+  "name": "Cotizacion",
+  "sections": {
+    "main": {
+      "type": "main-page-cotizacion"
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

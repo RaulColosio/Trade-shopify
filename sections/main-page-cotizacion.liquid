@@ -1,5 +1,3 @@
-{{ 'customer.css' | asset_url | stylesheet_tag }}
-
 <style>
   .quote-page-wrapper {
     background-color: #f8f8f8;
@@ -12,92 +10,12 @@
     margin-bottom: 2rem;
     color: #333;
   }
-  .quote-grid-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    align-items: start;
-  }
-  @media (min-width: 1024px) {
-    .quote-grid-layout {
-      grid-template-columns: repeat(12, 1fr);
-    }
-    .quote-items-column {
-      grid-column: span 8 / span 8;
-    }
-    .quote-form-column {
-      grid-column: span 4 / span 4;
-    }
-  }
   .quote-card {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     padding: 24px;
-  }
-  .form-vertical label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  .form-vertical label .required-asterisk {
-    color: #e53935;
-  }
-  .form-vertical input[type="text"],
-  .form-vertical input[type="email"],
-  .form-vertical input[type="tel"],
-  .form-vertical select,
-  .form-vertical textarea {
-    width: 100%;
-    height: 46px;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    padding: 0 12px;
-    color: #333;
-    transition: all 0.2s ease-in-out;
-    background-color: #fff;
-  }
-  .form-vertical textarea {
-    height: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-  .form-vertical input::placeholder,
-  .form-vertical textarea::placeholder,
-  .form-vertical select:invalid {
-    color: #888888;
-    opacity: 1;
-  }
-  .form-vertical input:focus,
-  .form-vertical select:focus,
-  .form-vertical textarea:focus {
-    outline: none;
-    border-color: #1976d2;
-    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
-  }
-  .fields-2-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  .form-vertical .space-y-4 > * + * {
-    margin-top: 1rem;
-  }
-   .form-vertical button[type="submit"] {
-    width: 100%;
-    height: 48px;
-    border-radius: 6px;
-    background-color: #1f2937;
-    color: white;
-    font-weight: 600;
-    transition: background-color 0.2s;
-    border: none;
-    margin-top: 1rem;
-  }
-  .form-vertical button[type="submit"]:hover {
-    background-color: #000000;
+    margin-bottom: 2rem;
   }
   .form-title-wrapper {
     padding-bottom: 1rem;
@@ -156,8 +74,7 @@
 
 <div class="quote-page-wrapper">
   <main class="page-width">
-      <h1 class="quote-page-title">Solicitud de cotización</h1>
-      <div class="quote-grid-layout">
+      <h1 class="quote-page-title">{{ page.title }}</h1>
         <section class="quote-items-column quote-card">
             <div class="form-title-wrapper">
               <h2 class="h3">Tus Productos a Cotizar</h2>
@@ -174,9 +91,7 @@
                 <!-- Items will be injected here by JavaScript -->
               </tbody>
             </table>
-            <p style="margin-top: 1.5rem; text-align: center;">Por favor, completa el formulario de abajo para enviar tu cotización.</p>
         </section>
-      </div>
   </main>
 </div>
 
@@ -222,7 +137,7 @@
         });
       }
       document.dispatchEvent(new CustomEvent('quote:changed'));
-      injectAndHideQuoteSummary(); // Attempt to inject data after rendering the quote
+      injectAndHideQuoteSummary();
     }
 
     quoteTableBody.addEventListener('click', function(event) {
@@ -258,14 +173,11 @@
       if (summaryField && fieldWrapper) {
         summaryField.value = window.QuoteManager.getQuoteSummary();
         fieldWrapper.style.display = 'none';
-        console.log('Quote summary injected and field hidden.');
-        return true; // Indicate success
+        return true;
       }
-      return false; // Indicate failure
+      return false;
     }
 
-    // Shopify Forms loads dynamically. We need to wait for it.
-    // We'll try a few times, then give up.
     let attempts = 0;
     const maxAttempts = 10;
     const interval = setInterval(() => {
@@ -273,12 +185,17 @@
       const success = injectAndHideQuoteSummary();
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
-        if (!success) {
-          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
-        }
       }
     }, 500);
 
     renderQuote();
   });
 </script>
+
+{% schema %}
+  {
+    "name": "Página de Cotización",
+    "tag": "section",
+    "settings": []
+  }
+{% endschema %}
