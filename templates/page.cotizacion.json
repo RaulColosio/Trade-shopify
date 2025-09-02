@@ -1,0 +1,11 @@
+{
+  "name": "RFQ",
+  "sections": {
+    "main": {
+      "type": "main-page-rfq"
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
