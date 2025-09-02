@@ -158,26 +158,24 @@
     });
 
     function injectAndHideQuoteSummary() {
-      const labels = document.querySelectorAll('label.shopify-form__label');
-      let summaryField = null;
-      let fieldWrapper = null;
+      // The ID from the user contains a '#' which must be escaped in CSS selectors.
+      // We are looking for the textarea, which we assume has the same ID as the label's 'for' attribute.
+      const fieldId = "label-custom\\#resumen_de_cotizacion";
+      const summaryField = document.querySelector(`textarea[id="${fieldId}"]`);
 
-      labels.forEach(label => {
-        if (label.textContent.trim() === 'Resumen de Cotizacion') {
-          const fieldId = label.getAttribute('for');
-          summaryField = document.getElementById(fieldId);
-          fieldWrapper = label.closest('.shopify-form__field');
+      if (summaryField) {
+        const fieldWrapper = summaryField.closest('.shopify-form__field');
+        if (fieldWrapper) {
+          fieldWrapper.style.display = 'none';
         }
-      });
-
-      if (summaryField && fieldWrapper) {
         summaryField.value = window.QuoteManager.getQuoteSummary();
-        fieldWrapper.style.display = 'none';
-        return true;
+        console.log('Quote summary injected and field hidden successfully.');
+        return true; // Success
       }
-      return false;
+      return false; // Not found yet
     }
 
+    // Shopify Forms can load after the initial DOM. We need to wait for it.
     let attempts = 0;
     const maxAttempts = 10;
     const interval = setInterval(() => {
@@ -185,6 +183,9 @@
       const success = injectAndHideQuoteSummary();
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
+        if (!success) {
+          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
+        }
       }
     }, 500);
 
@@ -194,7 +195,7 @@
 
 {% schema %}
   {
-    "name": "Página RFQ",
+    "name": "Página Cotizacion",
     "tag": "section",
     "settings": []
   }
