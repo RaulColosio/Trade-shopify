@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
       variantTitle: variantTitle,
       quantity: parseInt(quantity, 10),
       imageUrl: imageElement ? imageElement.src.split('?')[0] + '?width=100' : '',
-      url: productInfoElement.dataset.url
+      url: window.location.origin + productInfoElement.dataset.url
     };
 
     window.QuoteManager.addToQuote(variantId, quantity, productInfo);
