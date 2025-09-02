@@ -174,7 +174,12 @@
           fieldWrapper.style.display = 'none';
         }
         summaryField.value = window.QuoteManager.getQuoteSummary();
-        console.log('Quote summary injected successfully inside Shadow DOM.');
+
+        // Dispatch events to ensure the form app's state is updated
+        summaryField.dispatchEvent(new Event('input', { bubbles: true }));
+        summaryField.dispatchEvent(new Event('change', { bubbles: true }));
+
+        console.log('Quote summary injected and events dispatched inside Shadow DOM.');
         return true; // Success!
       }
       return false; // Field not found, will retry.
