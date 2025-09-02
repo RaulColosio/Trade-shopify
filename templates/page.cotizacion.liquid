@@ -195,7 +195,7 @@
                   <div class="fields-2-cols">
                     <div>
                       <label for="ContactForm-name">Nombre <span class="required-asterisk">*</span></label>
-                      <input type="text" id="ContactForm-name" name="contact[Nombre]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
+                      <input type="text" id="ContactForm-name" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
                     </div>
                     <div>
                       <label for="ContactForm-lastname">Apellido <span class="required-asterisk">*</span></label>
@@ -205,12 +205,12 @@
 
                   <div>
                     <label for="ContactForm-email">Correo <span class="required-asterisk">*</span></label>
-                    <input type="email" id="ContactForm-email" name="contact[Correo]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
+                    <input type="email" id="ContactForm-email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
                   </div>
 
                   <div>
-                    <label for="ContactForm-phone">Phone <span class="required-asterisk">*</span></label>
-                    <input type="tel" id="ContactForm-phone" name="contact[Whatsapp]" placeholder="WhatsApp" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
+                    <label for="ContactForm-phone">Whatsapp <span class="required-asterisk">*</span></label>
+                    <input type="tel" id="ContactForm-phone" name="contact[phone]" placeholder="WhatsApp" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
                   </div>
 
                   <div>
