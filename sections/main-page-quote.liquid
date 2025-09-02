@@ -213,9 +213,11 @@
                 // Check if the added node or any of its descendants matches the success banner selector.
                 // This is more robust than checking text content.
                 if (node.matches('[data-testid="banner-success"]') || node.querySelector('[data-testid="banner-success"]')) {
-                  console.log('Success banner detected. Clearing quote.');
-                  window.QuoteManager.clearQuote();
-                  renderQuote();
+                  console.log('Success banner detected. Changing title.');
+                  const titleElement = document.querySelector('.form-title-wrapper h2');
+                  if (titleElement) {
+                    titleElement.textContent = 'Resumen de tu cotización';
+                  }
                   observer.disconnect();
                   return; // Exit after finding the banner
                 }
