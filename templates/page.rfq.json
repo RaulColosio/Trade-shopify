@@ -1,8 +1,8 @@
 {
-  "name": "Cotizacion",
+  "name": "RFQ",
   "sections": {
     "main": {
-      "type": "main-page-cotizacion"
+      "type": "main-page-rfq"
     }
   },
   "order": [
