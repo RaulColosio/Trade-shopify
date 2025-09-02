@@ -1,169 +1,260 @@
 {{ 'customer.css' | asset_url | stylesheet_tag }}
 
 <style>
-  .quote-page-container {
-    padding: 30px 0;
+  .quote-page-wrapper {
+    background-color: #f8f8f8;
+    padding: 2rem 0;
+    font-family: 'Montserrat', sans-serif;
   }
-  .quote-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    font-size: 1.6rem;
-  }
-  .quote-table th, .quote-table td {
-    border: 1px solid rgba(0,0,0,0.1);
-    padding: 12px;
-    text-align: left;
-  }
-  .quote-table th {
-    background-color: #f5f5f5;
-  }
-  .quote-item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-  }
-  .quote-item-remove {
-    color: red;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-  .quote-form-container {
-    max-width: 600px;
+  .quote-page-container h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #333;
   }
   .quote-grid-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 1.5rem;
     align-items: start;
   }
-  @media (min-width: 990px) {
+  @media (min-width: 1024px) {
     .quote-grid-layout {
-      grid-template-columns: 2fr 1fr;
-      width: 100%;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .quote-items-column {
+      grid-column: span 8 / span 8;
+    }
+    .quote-form-column {
+      grid-column: span 4 / span 4;
     }
   }
-  .quote-grid-layout > div {
-    background-color: #FFFFFF;
-    padding: 2.5rem;
-    border-radius: var(--card-corner-radius, 8px);
+  .quote-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 24px;
   }
-  .visually-hidden {
-    position: absolute !important;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
+  .form-vertical label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
   }
-  .form-vertical > label,
-  .form-vertical > fieldset {
-    margin-top: 2rem;
+  .form-vertical label .required-asterisk {
+    color: #e53935;
   }
-  .form__fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
+  .form-vertical input[type="text"],
+  .form-vertical input[type="email"],
+  .form-vertical input[type="tel"],
+  .form-vertical select,
+  .form-vertical textarea {
+    width: 100%;
+    height: 46px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    padding: 0 12px;
+    color: #333;
+    transition: all 0.2s ease-in-out;
+    background-color: #fff;
   }
-  .form__fieldset legend {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
+  .form-vertical textarea {
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
-  .form__fieldset .radio-group {
-    display: flex;
-    flex-wrap: wrap;
+  .form-vertical input::placeholder,
+  .form-vertical textarea::placeholder,
+  .form-vertical select:invalid {
+    color: #888888;
+    opacity: 1;
+  }
+  .form-vertical input:focus,
+  .form-vertical select:focus,
+  .form-vertical textarea:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+  }
+  .fields-2-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
-  .form__fieldset .radio-group label {
-    font-weight: normal;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
+  .form-vertical .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+   .form-vertical button[type="submit"] {
+    width: 100%;
+    height: 48px;
+    border-radius: 6px;
+    background-color: #1f2937;
+    color: white;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    border: none;
+    margin-top: 1rem;
+  }
+  .form-vertical button[type="submit"]:hover {
+    background-color: #000000;
+  }
+  .form-title-wrapper {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .form-title-wrapper h2 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .quote-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .quote-table thead {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .quote-table th {
+    padding: 1rem;
+    text-align: left;
+  }
+  .quote-table th:nth-child(2) { text-align: center; }
+  .quote-table th:nth-child(3) { text-align: right; }
+  .quote-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .quote-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .quote-table td {
+    padding: 1.5rem 1rem;
+    vertical-align: top;
+  }
+  .quote-item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .quote-quantity-input {
+    width: 70px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+  }
+  .quote-item-remove {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
   }
 </style>
 
-<div class="customer page-width">
-  <div class="quote-page-container">
-    <h1>{{ page.title }}</h1>
-    <div class="quote-grid-layout">
-      <div id="quote-items-container">
-        <table class="quote-table">
-          <thead>
-            <tr>
-              <th colspan="2">Producto</th>
-              <th>Cantidad</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="quote-table-body">
-            <!-- Items will be injected here by JavaScript -->
-          </tbody>
-        </table>
-      </div>
+<div class="quote-page-wrapper">
+  <main class="page-width">
+      <h1 class="quote-page-title">Solicitud de cotización</h1>
+      <div class="quote-grid-layout">
+        <section class="quote-items-column quote-card">
+            <div class="form-title-wrapper">
+              <h2 class="h3">Tus Productos</h2>
+            </div>
+            <table class="quote-table">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">PRODUCTO</th>
+                  <th style="width: 25%; text-align: center;">CANTIDAD</th>
+                  <th style="width: 25%;"></th>
+                </tr>
+              </thead>
+              <tbody id="quote-table-body">
+                <!-- Items will be injected here by JavaScript -->
+              </tbody>
+            </table>
+        </section>
 
-      <div class="quote-form-container">
-        <h2>Completa tus datos para enviar la cotización</h2>
-        <div class="form-vertical">
-          {%- form 'contact', id: 'QuoteForm' -%}
-            {%- if form.posted_successfully? -%}
-              <p class="form-success">
-                {{ 'contact.form.post_success' | t }}
-              </p>
-            {%- endif -%}
-
-            {{ form.errors | default_errors }}
-
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <div style="flex: 1; min-width: 200px;">
-                <label for="ContactForm-name">Nombre</label>
-                <input type="text" id="ContactForm-name" name="contact[Nombre]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
-              </div>
-              <div style="flex: 1; min-width: 200px;">
-                <label for="ContactForm-lastname">Apellido</label>
-                <input type="text" id="ContactForm-lastname" name="contact[Apellido]" value="{% if form.lastname %}{{ form.lastname }}{% elsif customer %}{{ customer.last_name }}{% endif %}" required>
-              </div>
+        <aside class="quote-form-column">
+          <div class="quote-card">
+            <div class="form-title-wrapper">
+              <h2 class="h3">Completa tu solicitud</h2>
             </div>
 
-            <label for="ContactForm-email">Correo</label>
-            <input type="email" id="ContactForm-email" name="contact[Correo]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
+            <div class="pt-4">
+              {%- form 'contact', id: 'QuoteForm', class: 'form-vertical' -%}
+                <div class="space-y-4">
+                  {%- if form.posted_successfully? -%}
+                    <p class="form-success">
+                      {{ 'contact.form.post_success' | t }}
+                    </p>
+                  {%- endif -%}
+                  {{ form.errors | default_errors }}
 
-            <label for="ContactForm-phone">Whatsapp</label>
-            <input type="tel" id="ContactForm-phone" name="contact[Whatsapp]" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
+                  <div class="fields-2-cols">
+                    <div>
+                      <label for="ContactForm-name">Nombre <span class="required-asterisk">*</span></label>
+                      <input type="text" id="ContactForm-name" name="contact[Nombre]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
+                    </div>
+                    <div>
+                      <label for="ContactForm-lastname">Apellido <span class="required-asterisk">*</span></label>
+                      <input type="text" id="ContactForm-lastname" name="contact[Apellido]" value="{% if form.lastname %}{{ form.lastname }}{% elsif customer %}{{ customer.last_name }}{% endif %}" required>
+                    </div>
+                  </div>
 
-            <fieldset class="form__fieldset">
-              <legend class="form__label">¿Entrega?</legend>
-              <div class="radio-group">
-                <label for="entrega-recojo"><input type="radio" id="entrega-recojo" name="contact[Entrega]" value="¡Yo paso por ellos!">¡Yo paso por ellos!</label>
-                <label for="entrega-local"><input type="radio" id="entrega-local" name="contact[Entrega]" value="Entrega local en Monterrey.">Entrega local en Monterrey.</label>
-                <label for="entrega-nacional"><input type="radio" id="entrega-nacional" name="contact[Entrega]" value="Envío nacional.">Envío nacional.</label>
-              </div>
-            </fieldset>
+                  <div>
+                    <label for="ContactForm-email">Correo <span class="required-asterisk">*</span></label>
+                    <input type="email" id="ContactForm-email" name="contact[Correo]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
+                  </div>
 
-            <label for="ContactForm-zip">Código postal de envío</label>
-            <input type="text" id="ContactForm-zip" name="contact[Código postal de envío]">
+                  <div>
+                    <label for="ContactForm-phone">Phone <span class="required-asterisk">*</span></label>
+                    <input type="tel" id="ContactForm-phone" name="contact[Whatsapp]" placeholder="WhatsApp" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
+                  </div>
 
-            <fieldset class="form__fieldset">
-              <legend class="form__label">¿Con impresión?</legend>
-              <div class="radio-group">
-                <label for="impresion-si"><input type="radio" id="impresion-si" name="contact[Impresión]" value="Con impresión">Con impresión</label>
-                <label for="impresion-no"><input type="radio" id="impresion-no" name="contact[Impresión]" value="Sin impresión">Sin impresión</label>
-              </div>
-            </fieldset>
+                  <div>
+                    <label for="ContactForm-entrega">¿Entrega? <span class="required-asterisk">*</span></label>
+                    <select id="ContactForm-entrega" name="contact[Entrega]" required>
+                      <option value="¡Yo paso por ellos!" selected>¡Yo paso por ellos!</option>
+                      <option value="Entrega local en Monterrey.">Entrega local en Monterrey.</option>
+                      <option value="Envío nacional.">Envío nacional.</option>
+                    </select>
+                  </div>
 
-            <label for="ContactForm-details" style="margin-top: 1.5rem;">Cuéntanos todos los detalles:</label>
-            <textarea rows="7" id="ContactForm-details" name="contact[Detalles]"></textarea>
+                  <div>
+                    <label for="ContactForm-zip">Código postal</label>
+                    <input type="text" id="ContactForm-zip" name="contact[Código postal de envío]" placeholder="En caso de que requieras envío">
+                  </div>
 
-            <p style="font-size: 1.2rem; opacity: 0.8; margin-top: 1.5rem;">Si tu pedido requiere un diseño, te contactaremos por correo después de recibir tu solicitud para que nos lo envíes.</p>
+                  <div>
+                    <label for="ContactForm-impresion">¿Impresión? <span class="required-asterisk">*</span></label>
+                    <select id="ContactForm-impresion" name="contact[Impresión]" required>
+                      <option value="" selected disabled>Selecciona una opción</option>
+                      <option value="Con impresión">Con impresión</option>
+                      <option value="Sin impresión">Sin impresión</option>
+                    </select>
+                  </div>
 
-            <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
+                  <div>
+                    <label for="ContactForm-details">Cuéntanos todos los detalles:</label>
+                    <textarea rows="5" id="ContactForm-details" name="contact[Detalles]"></textarea>
+                  </div>
 
-            <button type="submit" id="quote-submit-button" class="button">
-              Enviar Cotización
-            </button>
-          {%- endform -%}
-        </div>
+                  <p style="font-size: 1.2rem; opacity: 0.8;">Si tu pedido requiere un diseño, te contactaremos por correo después de recibir tu solicitud para que nos lo envíes.</p>
+
+                  <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
+
+                  <button type="submit" id="quote-submit-button">
+                    Enviar solicitud
+                  </button>
+                </div>
+              {%- endform -%}
+            </div>
+          </div>
+        </aside>
       </div>
-    </div>
-  </div>
+  </main>
 </div>
 
 <script>
