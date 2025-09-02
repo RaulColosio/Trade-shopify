@@ -160,7 +160,7 @@
       <div class="quote-grid-layout">
         <section class="quote-items-column quote-card">
             <div class="form-title-wrapper">
-              <h2 class="h3">Tus Productos</h2>
+              <h2 class="h3">Tus Productos a Cotizar</h2>
             </div>
             <table class="quote-table">
               <thead>
@@ -174,85 +174,8 @@
                 <!-- Items will be injected here by JavaScript -->
               </tbody>
             </table>
+            <p style="margin-top: 1.5rem; text-align: center;">Por favor, completa el formulario de abajo para enviar tu cotización.</p>
         </section>
-
-        <aside class="quote-form-column">
-          <div class="quote-card">
-            <div class="form-title-wrapper">
-              <h2 class="h3">Completa tu solicitud</h2>
-            </div>
-
-            <div class="pt-4">
-              {%- form 'contact', id: 'QuoteForm', class: 'form-vertical' -%}
-                <div class="space-y-4">
-                  {%- if form.posted_successfully? -%}
-                    <p class="form-success">
-                ¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.
-                    </p>
-                  {%- endif -%}
-                  {{ form.errors | default_errors }}
-
-                  <div class="fields-2-cols">
-                    <div>
-                      <label for="ContactForm-name">Nombre <span class="required-asterisk">*</span></label>
-                      <input type="text" id="ContactForm-name" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.first_name }}{% endif %}" required>
-                    </div>
-                    <div>
-                      <label for="ContactForm-lastname">Apellido <span class="required-asterisk">*</span></label>
-                      <input type="text" id="ContactForm-lastname" name="contact[Apellido]" value="{% if form.lastname %}{{ form.lastname }}{% elsif customer %}{{ customer.last_name }}{% endif %}" required>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-email">Correo <span class="required-asterisk">*</span></label>
-                    <input type="email" id="ContactForm-email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-phone">Whatsapp <span class="required-asterisk">*</span></label>
-                    <input type="tel" id="ContactForm-phone" name="contact[phone]" placeholder="WhatsApp" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" required>
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-entrega">¿Entrega? <span class="required-asterisk">*</span></label>
-                    <select id="ContactForm-entrega" name="contact[Entrega]" required>
-                      <option value="¡Yo paso por ellos!" selected>¡Yo paso por ellos!</option>
-                      <option value="Entrega local en Monterrey.">Entrega local en Monterrey.</option>
-                      <option value="Envío nacional.">Envío nacional.</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-zip">Código postal</label>
-                    <input type="text" id="ContactForm-zip" name="contact[Código postal de envío]" placeholder="En caso de que requieras envío">
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-impresion">¿Impresión? <span class="required-asterisk">*</span></label>
-                    <select id="ContactForm-impresion" name="contact[Impresión]" required>
-                      <option value="" selected disabled>Selecciona una opción</option>
-                      <option value="Con impresión">Con impresión</option>
-                      <option value="Sin impresión">Sin impresión</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label for="ContactForm-details">Cuéntanos todos los detalles:</label>
-                    <textarea rows="5" id="ContactForm-details" name="contact[Detalles]"></textarea>
-                  </div>
-
-                  <p style="font-size: 1.2rem; opacity: 0.8;">Si tu pedido requiere un diseño, te contactaremos por correo después de recibir tu solicitud para que nos lo envíes.</p>
-
-                  <textarea id="quote-summary-for-form" name="contact[body]" class="visually-hidden"></textarea>
-
-                  <button type="submit" id="quote-submit-button">
-                    Enviar solicitud
-                  </button>
-                </div>
-              {%- endform -%}
-            </div>
-          </div>
-        </aside>
       </div>
   </main>
 </div>
@@ -260,10 +183,6 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const quoteTableBody = document.getElementById('quote-table-body');
-    const quoteSummaryInput = document.getElementById('quote-summary-for-form');
-    const quoteForm = document.getElementById('QuoteForm');
-    const submitButton = document.getElementById('quote-submit-button');
-    const modal = document.getElementById('quote-confirmation-modal');
 
     function renderQuote() {
       if (!window.QuoteManager) {
@@ -278,10 +197,7 @@
         const emptyRow = document.createElement('tr');
         emptyRow.innerHTML = `<td colspan="3">Tu cotizador está vacío. Agrega productos para poder solicitar una cotización.</td>`;
         quoteTableBody.appendChild(emptyRow);
-        if(submitButton) submitButton.disabled = true;
-        quoteSummaryInput.value = 'El cotizador está vacío.';
       } else {
-        if(submitButton) submitButton.disabled = false;
         quoteItems.forEach(item => {
           const row = document.createElement('tr');
           row.innerHTML = `
@@ -305,8 +221,8 @@
           quoteTableBody.appendChild(row);
         });
       }
-      quoteSummaryInput.value = window.QuoteManager.getQuoteSummary();
       document.dispatchEvent(new CustomEvent('quote:changed'));
+      injectAndHideQuoteSummary(); // Attempt to inject data after rendering the quote
     }
 
     quoteTableBody.addEventListener('click', function(event) {
@@ -326,38 +242,42 @@
       }
     });
 
-    function showSuccessModal() {
-      if (!modal) return;
+    function injectAndHideQuoteSummary() {
+      const labels = document.querySelectorAll('label.shopify-form__label');
+      let summaryField = null;
+      let fieldWrapper = null;
 
-      const modalContent = modal.querySelector('.quote-modal-content');
-      const whatsappIcon = `{{ 'icon-chat-bubble.svg' | asset_url | img_tag | replace: '<img', '<img style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"' }}`;
+      labels.forEach(label => {
+        if (label.textContent.trim() === 'Resumen de Cotizacion') {
+          const fieldId = label.getAttribute('for');
+          summaryField = document.getElementById(fieldId);
+          fieldWrapper = label.closest('.shopify-form__field');
+        }
+      });
 
-      modalContent.innerHTML = `
-        <button type="button" class="quote-modal-close" data-redirect-home>×</button>
-        <h3 class="h4">¡Gracias por tu mensaje!</h3>
-        <p style="margin: 1.5rem 0;">Revisaremos todos los detalles y nos pondremos en contacto contigo.</p>
-        <p>Mientras tanto, puedes navegar en nuestra página o enviarnos un Whatsapp para una comunicación más rápida.</p>
-        <a href="http://wa.me/+528182800683" target="_blank" class="button button--primary" style="margin-top: 2rem; display: inline-flex; align-items: center;">
-          ${whatsappIcon}
-          Enviar WhatsApp
-        </a>
-      `;
-
-      modal.style.display = 'flex';
-      setTimeout(() => modal.classList.add('is-visible'), 10);
-
-      modal.querySelector('[data-redirect-home]').addEventListener('click', () => {
-        window.QuoteManager.clearQuote();
-        window.location.href = '/';
-      }, { once: true });
+      if (summaryField && fieldWrapper) {
+        summaryField.value = window.QuoteManager.getQuoteSummary();
+        fieldWrapper.style.display = 'none';
+        console.log('Quote summary injected and field hidden.');
+        return true; // Indicate success
+      }
+      return false; // Indicate failure
     }
 
-    // Check if the form was successfully submitted on page load
-    const successMessage = document.querySelector('.form-success');
-    if (successMessage) {
-      showSuccessModal();
-      successMessage.style.display = 'none'; // Hide the original message
-    }
+    // Shopify Forms loads dynamically. We need to wait for it.
+    // We'll try a few times, then give up.
+    let attempts = 0;
+    const maxAttempts = 10;
+    const interval = setInterval(() => {
+      attempts++;
+      const success = injectAndHideQuoteSummary();
+      if (success || attempts >= maxAttempts) {
+        clearInterval(interval);
+        if (!success) {
+          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
+        }
+      }
+    }, 500);
 
     renderQuote();
   });
