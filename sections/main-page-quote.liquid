@@ -160,7 +160,7 @@
     function injectAndHideQuoteSummary() {
       // Find the label by its text content, which is more reliable than a generated ID.
       const allLabels = Array.from(document.querySelectorAll('label'));
-      const summaryLabel = allLabels.find(l => l.textContent.trim() === 'Resumen de Cotizacion');
+      const summaryLabel = allLabels.find(l => l.textContent.trim() === 'Resumen de Cotización');
 
       if (!summaryLabel) {
         return false; // Label not found yet, will retry.
@@ -195,7 +195,7 @@
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
         if (!success) {
-          console.error('Could not find the "Resumen de Cotizacion" field after multiple attempts.');
+          console.error('Could not find the "Resumen de Cotización" field after multiple attempts.');
         }
       }
     }, 500);
