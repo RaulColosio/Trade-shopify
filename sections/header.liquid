@@ -270,7 +270,12 @@
         {%- endcase -%}
       {%- endfor -%}
 
-      <a href="{{ routes.root_url }}pages/quote" class="header__icon header__icon--quote link focus-inset" id="quote-icon-bubble" style="position: relative; color: white;">
+      <style>
+        .header__icon--quote .icon-price-tag path {
+          fill: white;
+        }
+      </style>
+      <a href="{{ routes.root_url }}pages/quote" class="header__icon header__icon--quote link focus-inset" id="quote-icon-bubble" style="position: relative;">
         <span class="svg-wrapper">
           {{ 'icon-price-tag.svg' | inline_asset_content }}
         </span>
