@@ -58,33 +58,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const skuElement = document.querySelector(`#Sku-${productInfoElement.dataset.section}`);
     const imageElement = document.querySelector('.product__media-gallery .product-media-gallery__image, .product__media-wrapper img');
 
-    // Get variant-specific data
+    // --- Clean up SKU ---
+    let skuText = skuElement ? skuElement.textContent.trim() : 'N/A';
+    if (skuText.toLowerCase().startsWith('sku:')) {
+      skuText = skuText.substring(4).trim();
+    }
+
+    // --- Get Variant Title ---
     let variantTitle = '';
-    let currentVariant = null;
-    if (window.productJSON) {
-      // Some themes expose a global product JSON
-      currentVariant = window.productJSON.variants.find(v => v.id == variantId);
-    } else if (productInfoElement.product) {
-       // Some themes attach data to the custom element
-       currentVariant = productInfoElement.product.variants.find(v => v.id == variantId);
-    }
-
-    if(currentVariant) {
-        variantTitle = currentVariant.title;
-    } else {
-        // Fallback for variant title
-        const variantPicker = document.querySelector('variant-radios, variant-selects');
-        if (variantPicker) {
-            const selectedOption = variantPicker.querySelector('input:checked + label');
-            if(selectedOption) variantTitle = selectedOption.textContent.trim();
+    // Primary method: Read from the data script tag in the variant picker.
+    const selectedVariantScript = document.querySelector('[data-selected-variant]');
+    if (selectedVariantScript) {
+      try {
+        const variantData = JSON.parse(selectedVariantScript.textContent);
+        if (variantData && variantData.title && variantData.title.toLowerCase() !== 'default title') {
+          variantTitle = variantData.title;
         }
+      } catch (e) {
+        console.error('Could not parse selected variant JSON:', e);
+      }
     }
 
+    // Fallback method: Try to find the selected radio button's label.
+    if (!variantTitle) {
+      const variantPicker = document.querySelector('variant-radios, variant-selects');
+      if (variantPicker) {
+        const selectedOption = variantPicker.querySelector('input:checked + label');
+        if (selectedOption) {
+          variantTitle = selectedOption.textContent.trim();
+        }
+      }
+    }
 
     const productInfo = {
       title: productTitle || 'Producto Desconocido',
       price: priceElement ? priceElement.textContent.trim() : 'N/A',
-      sku: skuElement ? skuElement.textContent.trim() : 'N/A',
+      sku: skuText,
       variantId: variantId,
       variantTitle: variantTitle,
       quantity: parseInt(quantity, 10),

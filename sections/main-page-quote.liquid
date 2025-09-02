@@ -209,12 +209,16 @@
         for (const mutation of mutationsList) {
           if (mutation.type === 'childList') {
             for (const node of mutation.addedNodes) {
-              if (node.nodeType === 1 && node.textContent.toLowerCase().includes('gracias por tu mensaje')) {
-                console.log('Success message detected. Clearing quote.');
-                window.QuoteManager.clearQuote();
-                renderQuote();
-                observer.disconnect();
-                return;
+              if (node.nodeType === 1) {
+                // Check if the added node or any of its descendants matches the success banner selector.
+                // This is more robust than checking text content.
+                if (node.matches('[data-testid="banner-success"]') || node.querySelector('[data-testid="banner-success"]')) {
+                  console.log('Success banner detected. Clearing quote.');
+                  window.QuoteManager.clearQuote();
+                  renderQuote();
+                  observer.disconnect();
+                  return; // Exit after finding the banner
+                }
               }
             }
           }
